@@ -90,6 +90,10 @@ li span { color: var(--orchid-deep); font-size: 20px; }
 .stat { background: var(--pink-soft); padding: 10px 12px; box-shadow: 0 0 0 3px var(--ink); }
 .stat small { display: block; font-family: var(--px); font-size: 8px; color: var(--orchid-deep); margin-bottom: 7px; }
 .hint { font-size: 20px; opacity: .8; max-width: 60ch; }
+.hint:empty { display: none; }
+.meta { font-size: 20px; color: var(--orchid-deep); margin-bottom: 10px; }
+.modelo { opacity: .7; }
+.intro { font-size: 24px; margin-bottom: 26px; max-width: 60ch; }
 
 .lnk { display: inline-block; margin: 4px 8px 4px 2px; padding: 10px 12px; font-family: var(--px); font-size: 9px; line-height: 1.4; color: var(--ink); background: var(--pink); text-decoration: none; box-shadow: var(--frame); }
 a.lnk:hover { background: var(--lime); }
@@ -118,6 +122,8 @@ a.lnk:hover { background: var(--lime); }
       <button class="mi" role="tab" id="t-sobre" data-tab="sobre">SOBRE MIM</button>
       <button class="mi" role="tab" id="t-curriculo" data-tab="curriculo">CURRÍCULO</button>
       <button class="mi" role="tab" id="t-projetos" data-tab="projetos">PROJETINHOS</button>
+      <button class="mi" role="tab" id="t-certificados" data-tab="certificados">CERTIFICADOS</button>
+      <button class="mi" role="tab" id="t-sugestoes" data-tab="sugestoes">SUGESTÃO DE CURSOS</button>
     </nav>
     <div class="box" id="contatos" hidden></div>
   </aside>
@@ -138,10 +144,10 @@ const D = {
     { h: 'Experiência', items: [
       { t: 'Estágio em Planejamento e Eficiência', s: 'Rock Encantech ·  desde abr/2025' } ] },
     { h: 'Programas e iniciativas', items: [
-      { t: 'Sebrae Supernova', s: 'Programa de empreendedorismo', s: 'Projeto Cuidadoula' },
+      { t: 'Sebrae Supernova', s: 'Programa de empreendedorismo · Projeto Cuidadoula' },
       { t: 'Instituto Bold', s: 'Embaixadora desde 2023' },
-      { t: 'Clube de pesquisa científica (GOMPU)', s: 'Em 2025, ajudei na criação e fundação; O impacto chamou a atenção da faculdade que criou o próprio programa de iniciação científica em 2026' }
-      { t: 'Pulse Mais' , s: 'desde 2025 atua como tutora de Excel nos módulos de capacitação tecnológica'] },
+      { t: 'Clube de pesquisa científica (GOMPU)', s: 'Em 2025, ajudei na criação e fundação; O impacto chamou a atenção da faculdade que criou o próprio programa de iniciação científica em 2026' },
+      { t: 'Pulse Mais' , s: 'desde 2025 atua como tutora de Excel nos módulos de capacitação tecnológica' } ] },
     { h: 'Ferramentas e temas', chips: ['Google Sheets', 'Análise de dados', 'OKRs', 'Mapeamento de processos', 'Business Intelligence', 'Excel Intermediário', 'PowerBI Básico', 'Amazon Quick' ] }
   ],
   analises: [
@@ -153,7 +159,27 @@ const D = {
     { t: 'Ferramenta Realizados', d: 'Barra lateral em Google Apps Script para a planilha de registros do grupo do projeto integrador.', tags: ['Apps Script', 'Sheets'], link: '' }
   ]
 };
-const NOTE = ';
+const NOTE = '';
+
+/* CERTIFICADOS E CURSOS
+   Para adicionar um certificado: copie uma linha { ... } da lista, cole logo abaixo (com vírgula entre elas) e edite.
+   As linhas com modelo: true só aparecem enquanto SHOW_SLOTS for true. Apague-as quando adicionar as suas. */
+const CERTS = [
+  { t: 'Nome do certificado', inst: 'Instituição', ano: '2025', h: '20h', tags: ['Tema'], link: '', modelo: true }
+];
+const EM_CURSO = [
+  { t: 'Nome do curso em andamento', inst: 'Plataforma ou instituição', prev: 'previsão: mês/ano', tags: ['Tema'], link: '', modelo: true }
+];
+/* SUGESTÃO DE CURSOS: cursos que você recomenda a quem visita o portfólio. Mesmo esquema de cópia e edição. */
+const SUG_INTRO = 'Cursos que eu recomendo para quem quer começar em dados, negócios e processos.';
+const SUGESTOES = [
+  { t: 'Nome do curso', plat: 'Plataforma', nivel: 'Iniciante', por: 'Por que eu recomendo este curso, em uma ou duas frases.', tags: ['Tema'], link: '', modelo: true }
+];
+const vis = list => list.filter(i => !i.modelo || SHOW_SLOTS);
+const lista = (list, card) => { const v = vis(list); return v.length ? v.map(card).join('') : '<div class="box"><p>Em breve.</p></div>'; };
+const certCard = c => `<div class="box quest${c.modelo ? ' modelo' : ''}"><small>${c.modelo ? 'MODELO · COPIE E EDITE' : 'CERTIFICADO'}</small><h3>${c.t}</h3><p class="meta">${[c.inst, c.ano, c.h].filter(Boolean).join(' · ')}</p><div>${tags(c.tags || [])}</div><div style="margin-top:6px">${slot(c.link, 'VER CERTIFICADO')}</div></div>`;
+const cursoCard = c => `<div class="box quest${c.modelo ? ' modelo' : ''}"><small>${c.modelo ? 'MODELO · COPIE E EDITE' : 'EM ANDAMENTO'}</small><h3>${c.t}</h3><p class="meta">${[c.inst, c.prev].filter(Boolean).join(' · ')}</p><div>${tags(c.tags || [])}</div></div>`;
+const sugCard = c => `<div class="box quest${c.modelo ? ' modelo' : ''}"><small>${c.modelo ? 'MODELO · COPIE E EDITE' : 'INDICAÇÃO'}</small><h3>${c.t}</h3><p class="meta">${[c.plat, c.nivel].filter(Boolean).join(' · ')}</p><p>${c.por}</p><div style="margin-top:14px">${tags(c.tags || [])}</div><div style="margin-top:6px">${slot(c.link, 'VER CURSO')}</div></div>`;
 const tags = a => a.map(t => `<span class="tag">${t}</span>`).join('');
 /* LINKS: cole o endereço entre as aspas de "link" em cada projeto (acima) e em CONTATOS (abaixo).
    Enquanto SHOW_SLOTS for true, os espaços vazios aparecem tracejados. Troque para false quando terminar. */
@@ -191,7 +217,12 @@ const VIEWS = {
   projetos: () => `
     <div><span class="sec">ANÁLISES</span><div class="cols">${proj(D.analises, 'MISSÃO DE ANÁLISE')}</div></div>
     <div><span class="sec">PROJETOS DE CURSOS</span><div class="cols">${proj(D.cursos, 'MISSÃO DE CURSO')}</div></div>
-    <p class="hint">${NOTE}</p>`
+    <p class="hint">${NOTE}</p>`,
+  certificados: () => `
+    <div><span class="sec">CERTIFICADOS</span><div class="cols">${lista(CERTS, certCard)}</div></div>
+    <div><span class="sec">EM ANDAMENTO</span><div class="cols">${lista(EM_CURSO, cursoCard)}</div></div>`,
+  sugestoes: () => `
+    <div><span class="sec">SUGESTÃO DE CURSOS</span><p class="intro">${SUG_INTRO}</p><div class="cols">${lista(SUGESTOES, sugCard)}</div></div>`
 };
 
 const SPR = ['.....LL.....','....LLLL....','....LLLL....','...PPPPPP...','..PHHPPPPP..','.PHHPPPPPPP.','.PHPPPPPPPP.','.PPPPPPPPPP.','PPPPPPPPPPPP','PP.PPPPP.PP.','.OOOOOOOOOO.','..ODODODOD..','..DODODODO..','...ODODOD...','....DODO....','.....OO.....'];
