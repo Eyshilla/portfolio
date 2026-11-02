@@ -133,16 +133,16 @@ const D = {
   stats: [['SEMESTRE', '7º na UNIVESP'], ['FORMATURA', 'dez/2028'], ['FOCO', 'Business Intelligence e Dados']],
   cv: [
     { h: 'Formação', items: [
-      { t: 'Negócios e Produção', s: 'UNIVESP · 7º semestre · formatura prevista em dez/2028' },
-      { t: 'Engenharia de Produção', s: 'Em curso' },
-      { t: 'Tecnologia em Processos de Produção', s: 'Formação tecnológica' } ] },
+      { t: 'Engenharia de Produção', s: 'UNIVESP · 7º semestre · formatura prevista em dez/2028' },
+      { t: 'Tecnologia Mecânica na modalidade Processos de Produção', s: 'Formação tecnológica' } ] },
     { h: 'Experiência', items: [
       { t: 'Estágio em Planejamento e Eficiência', s: 'Rock Encantech ·  desde abr/2025' } ] },
     { h: 'Programas e iniciativas', items: [
-      { t: 'Sebrae Supernova', s: 'Programa de empreendedorismo' },
-      { t: 'Instituto Bold', s: 'Programa com vídeo-depoimento sobre impacto na trajetória' },
-      { t: 'Clube de pesquisa científica', s: 'Ajudei a fundar; gerou o programa de iniciação científica da faculdade' } ] },
-    { h: 'Ferramentas e temas', chips: ['Google Sheets', 'Apps Script', 'Análise de dados', 'OKRs', 'Mapeamento de processos', 'Business Intelligence'] }
+      { t: 'Sebrae Supernova', s: 'Programa de empreendedorismo', s: 'Projeto Cuidadoula' },
+      { t: 'Instituto Bold', s: 'Embaixadora desde 2023' },
+      { t: 'Clube de pesquisa científica (GOMPU)', s: 'Em 2025, ajudei na criação e fundação; O impacto chamou a atenção da faculdade que criou o próprio programa de iniciação científica em 2026' }
+      { t: 'Pulse Mais' , s: 'desde 2025 atua como tutora de Excel nos módulos de capacitação tecnológica'] },
+    { h: 'Ferramentas e temas', chips: ['Google Sheets', 'Análise de dados', 'OKRs', 'Mapeamento de processos', 'Business Intelligence', 'Excel Intermediário', 'PowerBI Básico', 'Amazon Quick' ] }
   ],
   analises: [
     { t: 'Avaliações da Pribox Esquadrias', d: 'Proposta de melhoria para uma empresa de esquadrias de alumínio, baseada em avaliações públicas de clientes, com foco nas negativas.', tags: ['Análise de avaliações', 'Proposta'], link: '' },
@@ -153,15 +153,14 @@ const D = {
     { t: 'Ferramenta Realizados', d: 'Barra lateral em Google Apps Script para a planilha de registros do grupo do projeto integrador.', tags: ['Apps Script', 'Sheets'], link: '' }
   ]
 };
-const NOTE = 'Textos de exemplo montados a partir do que você contou. Troque pelos seus antes de publicar.';
+const NOTE = ';
 const tags = a => a.map(t => `<span class="tag">${t}</span>`).join('');
 /* LINKS: cole o endereço entre as aspas de "link" em cada projeto (acima) e em CONTATOS (abaixo).
    Enquanto SHOW_SLOTS for true, os espaços vazios aparecem tracejados. Troque para false quando terminar. */
 const SHOW_SLOTS = true;
 const CONTATOS = [
-  { label: 'GITHUB', url: '' },
-  { label: 'LINKEDIN', url: '' },
-  { label: 'E-MAIL', url: '' }
+  { label: 'GITHUB', url: 'https://github.com/Eyshilla/' },
+  { label: 'LINKEDIN', url: 'https://www.linkedin.com/in/eyshilla-lima' }
 ];
 const slot = (url, label) => url
   ? `<a class="lnk" href="${url}" target="_blank" rel="noopener">${label} ▶</a>`
