@@ -93,6 +93,15 @@ li span { color: var(--orchid-deep); font-size: 20px; }
 .hint:empty { display: none; }
 .meta { font-size: 20px; color: var(--orchid-deep); margin-bottom: 10px; }
 .modelo { opacity: .7; }
+.thumb { display: flex; align-items: center; justify-content: center; aspect-ratio: 7 / 5; overflow: hidden; margin: 3px 3px 18px; background: var(--pink-soft); box-shadow: 0 0 0 3px var(--ink); color: var(--orchid-deep); text-decoration: none; text-align: center; }
+a.thumb:hover { filter: brightness(1.05); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.thumb-vazio { font-family: var(--px); font-size: 8px; line-height: 1.6; padding: 12px; border: 3px dashed var(--orchid); margin: 10px; }
+.ficon { width: 64px; height: auto; }
+.ficon .pg { fill: var(--pink); stroke: var(--ink); stroke-width: 3; }
+.ficon .dobra { fill: none; stroke: var(--ink); stroke-width: 3; }
+.ficon .rot { fill: var(--lime); stroke: var(--ink); stroke-width: 2; }
+.ficon text { fill: var(--ink); font-family: var(--px); }
 .intro { font-size: 24px; margin-bottom: 26px; max-width: 60ch; }
 
 .lnk { display: inline-block; margin: 4px 8px 4px 2px; padding: 10px 12px; font-family: var(--px); font-size: 9px; line-height: 1.4; color: var(--ink); background: var(--pink); text-decoration: none; box-shadow: var(--frame); }
@@ -103,6 +112,8 @@ a.lnk:hover { background: var(--lime); }
   .wrap { grid-template-columns: minmax(0, 1fr); }
   .menu { grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); }
 }
+.status { max-width: 1000px; margin: 40px auto 0; font-size: 18px; opacity: .7; }
+.carregando { font-family: var(--px); font-size: 11px; color: var(--orchid-deep); padding: 8px 4px; }
 </style>
 
 <div class="wrap">
@@ -110,13 +121,9 @@ a.lnk:hover { background: var(--lime); }
     <div class="box">
       <span class="ti">Jogadora 1</span>
       <div class="sbox"><canvas id="spr" aria-hidden="true"></canvas></div>
-      <p class="name">EYSHILLA</p>
-      <p class="class">Classe: estudante de Negócios e Produção</p>
-      <dl class="ficha">
-        <div><dt>MISSÃO ATUAL</dt><dd>Business Intelligence</dd></div>
-        <div><dt>GUILDA</dt><dd>Rock Encantech (estágio em Planejamento e Eficiência)</dd></div>
-        <div><dt>FASE</dt><dd>7º semestre · dez/2028</dd></div>
-      </dl>
+      <p class="name" id="nome"></p>
+      <p class="class" id="classe"></p>
+      <dl class="ficha" id="ficha"></dl>
     </div>
     <nav class="menu" role="tablist" aria-label="Menu do portfólio">
       <button class="mi" role="tab" id="t-sobre" data-tab="sobre">SOBRE MIM</button>
@@ -129,102 +136,283 @@ a.lnk:hover { background: var(--lime); }
   </aside>
   <main class="main" id="main" role="tabpanel" aria-live="polite"></main>
 </div>
+<p class="status" id="status" hidden></p>
 
 <script>
-const D = {
-  sobre: [
-    'Oi! Eu sou a Eyshilla. Estudo Negócios e Produção na UNIVESP (7º semestre) e faço estágio em Planejamento e Eficiência na Rock Encantech. Quero trabalhar com Business Intelligence: transformar dados e processos em decisões melhores.',
-    'Em 2026 participei do Sebrae Supernova e em 2025 ajudei a fundar um clube de pesquisa científica na minha faculdade, que levou a instituição a lançar um programa de iniciação científica em 2026.'
-  ],
-  stats: [['SEMESTRE', '7º na UNIVESP'], ['FORMATURA', 'dez/2028'], ['FOCO', 'Business Intelligence e Dados']],
-  cv: [
-    { h: 'Formação', items: [
-      { t: 'Engenharia de Produção', s: 'UNIVESP · 7º semestre · formatura prevista em dez/2028' },
-      { t: 'Tecnologia Mecânica na modalidade Processos de Produção', s: 'Formação tecnológica' } ] },
-    { h: 'Experiência', items: [
-      { t: 'Estágio em Planejamento e Eficiência', s: 'Rock Encantech ·  desde abr/2025' } ] },
-    { h: 'Programas e iniciativas', items: [
-      { t: 'Sebrae Supernova', s: 'Programa de empreendedorismo · Projeto Cuidadoula' },
-      { t: 'Instituto Bold', s: 'Embaixadora desde 2023' },
-      { t: 'Clube de pesquisa científica (GOMPU)', s: 'Em 2025, ajudei na criação e fundação; O impacto chamou a atenção da faculdade que criou o próprio programa de iniciação científica em 2026' },
-      { t: 'Pulse Mais' , s: 'desde 2025 atua como tutora de Excel nos módulos de capacitação tecnológica' } ] },
-    { h: 'Ferramentas e temas', chips: ['Google Sheets', 'Análise de dados', 'OKRs', 'Mapeamento de processos', 'Business Intelligence', 'Excel Intermediário', 'PowerBI Básico', 'Amazon Quick' ] }
-  ],
-  analises: [
-    { t: 'Avaliações da Pribox Esquadrias', d: 'Proposta de melhoria para uma empresa de esquadrias de alumínio, baseada em avaliações públicas de clientes, com foco nas negativas.', tags: ['Análise de avaliações', 'Proposta'], link: '' },
-    { t: 'Trilha de análise de dados', d: 'Roadmap de estudo estruturado para desenvolver as habilidades de análise de dados rumo a BI.', tags: ['Estudo', 'BI'], link: '' }
-  ],
-  cursos: [
-    { t: 'Projeto Integrador: esquadrias', d: 'Mapeamento dos processos de vendas e pós-venda de uma empresa de esquadrias, feito na UNIVESP.', tags: ['Processos', 'UNIVESP'], link: '' },
-    { t: 'Ferramenta Realizados', d: 'Barra lateral em Google Apps Script para a planilha de registros do grupo do projeto integrador.', tags: ['Apps Script', 'Sheets'], link: '' }
-  ]
-};
-const NOTE = '';
+/* ============ CONFIGURAÇÃO (a única parte do código que você mexe, e só uma vez) ============ */
+// Cole entre as aspas o link CSV publicado da planilha. Enquanto estiver vazio, o site usa os dados de reserva abaixo.
+const PLANILHA_URL = '';
+const VERSAO = '2026-11-06 · v1';      // confira no rodapé abrindo o site com ?status no final do endereço
+const PASTA = 'certificados/';    // pasta do repositório onde ficam os PDFs e imagens dos certificados
 
-/* CERTIFICADOS E CURSOS
-   Para adicionar um certificado: copie uma linha { ... } da lista, cole logo abaixo (com vírgula entre elas) e edite.
-   As linhas com modelo: true só aparecem enquanto SHOW_SLOTS for true. Apague-as quando adicionar as suas. */
-const CERTS = [
-  { t: 'Nome do certificado', inst: 'Instituição', ano: '2025', h: '20h', tags: ['Tema'], link: '', modelo: true }
+/* ============ DADOS DE RESERVA (mesmo formato da planilha; aparecem se a planilha não carregar) ============ */
+const PADRAO = [
+ {
+  "tipo": "perfil",
+  "titulo": "EYSHILLA",
+  "detalhe": "Classe: estudante de Negócios e Produção"
+ },
+ {
+  "tipo": "ficha",
+  "titulo": "MISSÃO ATUAL",
+  "detalhe": "Business Intelligence"
+ },
+ {
+  "tipo": "ficha",
+  "titulo": "GUILDA",
+  "detalhe": "Rock Encantech (estágio em Planejamento e Eficiência)"
+ },
+ {
+  "tipo": "ficha",
+  "titulo": "FASE",
+  "detalhe": "7º semestre · dez/2028"
+ },
+ {
+  "tipo": "sobre",
+  "descricao": "Oi! Eu sou a Eyshilla. Estudo Negócios e Produção na UNIVESP (7º semestre) e faço estágio em Planejamento e Eficiência na Rock Encantech. Quero trabalhar com Business Intelligence: transformar dados e processos em decisões melhores."
+ },
+ {
+  "tipo": "sobre",
+  "descricao": "Em 2026 participei do Sebrae Supernova e em 2025 ajudei a fundar um clube de pesquisa científica na minha faculdade, que levou a instituição a lançar um programa de iniciação científica em 2026."
+ },
+ {
+  "tipo": "destaque",
+  "titulo": "SEMESTRE",
+  "detalhe": "7º na UNIVESP"
+ },
+ {
+  "tipo": "destaque",
+  "titulo": "FORMATURA",
+  "detalhe": "dez/2028"
+ },
+ {
+  "tipo": "destaque",
+  "titulo": "FOCO",
+  "detalhe": "Business Intelligence e Dados"
+ },
+ {
+  "tipo": "formacao",
+  "titulo": "Engenharia de Produção",
+  "detalhe": "UNIVESP · 7º semestre · formatura prevista em dez/2028"
+ },
+ {
+  "tipo": "formacao",
+  "titulo": "Tecnologia Mecânica na modalidade Processos de Produção",
+  "detalhe": "Formação tecnológica"
+ },
+ {
+  "tipo": "experiencia",
+  "titulo": "Estágio em Planejamento e Eficiência",
+  "detalhe": "Rock Encantech · desde abr/2025"
+ },
+ {
+  "tipo": "programa",
+  "titulo": "Sebrae Supernova",
+  "detalhe": "Programa de empreendedorismo · Projeto Cuidadoula"
+ },
+ {
+  "tipo": "programa",
+  "titulo": "Instituto Bold",
+  "detalhe": "Embaixadora desde 2023"
+ },
+ {
+  "tipo": "programa",
+  "titulo": "Clube de pesquisa científica (GOMPU)",
+  "detalhe": "Em 2025, ajudei na criação e fundação; O impacto chamou a atenção da faculdade que criou o próprio programa de iniciação científica em 2026"
+ },
+ {
+  "tipo": "programa",
+  "titulo": "Pulse Mais",
+  "detalhe": "desde 2025 atua como tutora de Excel nos módulos de capacitação tecnológica"
+ },
+ {
+  "tipo": "ferramenta",
+  "titulo": "Google Sheets"
+ },
+ {
+  "tipo": "ferramenta",
+  "titulo": "Análise de dados"
+ },
+ {
+  "tipo": "ferramenta",
+  "titulo": "OKRs"
+ },
+ {
+  "tipo": "ferramenta",
+  "titulo": "Mapeamento de processos"
+ },
+ {
+  "tipo": "ferramenta",
+  "titulo": "Business Intelligence"
+ },
+ {
+  "tipo": "ferramenta",
+  "titulo": "Excel Intermediário"
+ },
+ {
+  "tipo": "ferramenta",
+  "titulo": "PowerBI Básico"
+ },
+ {
+  "tipo": "ferramenta",
+  "titulo": "Amazon Quick"
+ },
+ {
+  "tipo": "analise",
+  "titulo": "Avaliações da Pribox Esquadrias",
+  "descricao": "Proposta de melhoria para uma empresa de esquadrias de alumínio, baseada em avaliações públicas de clientes, com foco nas negativas.",
+  "tags": "Análise de avaliações; Proposta"
+ },
+ {
+  "tipo": "analise",
+  "titulo": "Trilha de análise de dados",
+  "descricao": "Roadmap de estudo estruturado para desenvolver as habilidades de análise de dados rumo a BI.",
+  "tags": "Estudo; BI"
+ },
+ {
+  "tipo": "projeto_curso",
+  "titulo": "Projeto Integrador: esquadrias",
+  "descricao": "Mapeamento dos processos de vendas e pós-venda de uma empresa de esquadrias, feito na UNIVESP.",
+  "tags": "Processos; UNIVESP"
+ },
+ {
+  "tipo": "projeto_curso",
+  "titulo": "Ferramenta Realizados",
+  "descricao": "Barra lateral em Google Apps Script para a planilha de registros do grupo do projeto integrador.",
+  "tags": "Apps Script; Sheets"
+ },
+ {
+  "tipo": "certificado",
+  "titulo": "EXEMPLO: Nome do certificado",
+  "detalhe": "Instituição · 2025 · 20h",
+  "tags": "Tema; Outro tema",
+  "arquivo": "exemplo.pdf",
+  "mostrar": "não"
+ },
+ {
+  "tipo": "em_andamento",
+  "titulo": "EXEMPLO: Nome do curso em andamento",
+  "detalhe": "Plataforma · previsão: mês/ano",
+  "tags": "Tema",
+  "mostrar": "não"
+ },
+ {
+  "tipo": "intro_sugestoes",
+  "descricao": "Cursos que eu recomendo para quem quer começar em dados, negócios e processos."
+ },
+ {
+  "tipo": "sugestao",
+  "titulo": "EXEMPLO: Nome do curso",
+  "detalhe": "Plataforma · Iniciante",
+  "descricao": "Por que eu recomendo este curso, em uma ou duas frases.",
+  "tags": "Tema",
+  "link": "https://exemplo.com",
+  "mostrar": "não"
+ },
+ {
+  "tipo": "contato",
+  "titulo": "GITHUB",
+  "link": "https://github.com/Eyshilla/"
+ },
+ {
+  "tipo": "contato",
+  "titulo": "LINKEDIN",
+  "link": "https://www.linkedin.com/in/eyshilla-lima"
+ }
 ];
-const EM_CURSO = [
-  { t: 'Nome do curso em andamento', inst: 'Plataforma ou instituição', prev: 'previsão: mês/ano', tags: ['Tema'], link: '', modelo: true }
-];
-/* SUGESTÃO DE CURSOS: cursos que você recomenda a quem visita o portfólio. Mesmo esquema de cópia e edição. */
-const SUG_INTRO = 'Cursos que eu recomendo para quem quer começar em dados, negócios e processos.';
-const SUGESTOES = [
-  { t: 'Nome do curso', plat: 'Plataforma', nivel: 'Iniciante', por: 'Por que eu recomendo este curso, em uma ou duas frases.', tags: ['Tema'], link: '', modelo: true }
-];
-const vis = list => list.filter(i => !i.modelo || SHOW_SLOTS);
-const lista = (list, card) => { const v = vis(list); return v.length ? v.map(card).join('') : '<div class="box"><p>Em breve.</p></div>'; };
-const certCard = c => `<div class="box quest${c.modelo ? ' modelo' : ''}"><small>${c.modelo ? 'MODELO · COPIE E EDITE' : 'CERTIFICADO'}</small><h3>${c.t}</h3><p class="meta">${[c.inst, c.ano, c.h].filter(Boolean).join(' · ')}</p><div>${tags(c.tags || [])}</div><div style="margin-top:6px">${slot(c.link, 'VER CERTIFICADO')}</div></div>`;
-const cursoCard = c => `<div class="box quest${c.modelo ? ' modelo' : ''}"><small>${c.modelo ? 'MODELO · COPIE E EDITE' : 'EM ANDAMENTO'}</small><h3>${c.t}</h3><p class="meta">${[c.inst, c.prev].filter(Boolean).join(' · ')}</p><div>${tags(c.tags || [])}</div></div>`;
-const sugCard = c => `<div class="box quest${c.modelo ? ' modelo' : ''}"><small>${c.modelo ? 'MODELO · COPIE E EDITE' : 'INDICAÇÃO'}</small><h3>${c.t}</h3><p class="meta">${[c.plat, c.nivel].filter(Boolean).join(' · ')}</p><p>${c.por}</p><div style="margin-top:14px">${tags(c.tags || [])}</div><div style="margin-top:6px">${slot(c.link, 'VER CURSO')}</div></div>`;
-const tags = a => a.map(t => `<span class="tag">${t}</span>`).join('');
-/* LINKS: cole o endereço entre as aspas de "link" em cada projeto (acima) e em CONTATOS (abaixo).
-   Enquanto SHOW_SLOTS for true, os espaços vazios aparecem tracejados. Troque para false quando terminar. */
-const SHOW_SLOTS = true;
-const CONTATOS = [
-  { label: 'GITHUB', url: 'https://github.com/Eyshilla/' },
-  { label: 'LINKEDIN', url: 'https://www.linkedin.com/in/eyshilla-lima' }
-];
-const slot = (url, label) => url
-  ? `<a class="lnk" href="${url}" target="_blank" rel="noopener">${label} ▶</a>`
-  : (SHOW_SLOTS ? `<span class="lnk empty">${label}: colar link aqui</span>` : '');
-const proj = (list, label) => list.map(p => `<div class="box quest"><small>${label}</small><h3>${p.t}</h3><p>${p.d}</p><div style="margin-top:14px">${tags(p.tags)}</div><div style="margin-top:6px">${slot(p.link, 'VER NO GITHUB')}</div></div>`).join('');
-function renderContatos() {
-  const el = document.getElementById('contatos');
-  const html = CONTATOS.map(c => slot(c.url, c.label)).join('');
-  if (!html) return;
-  el.innerHTML = `<span class="ti">Contatos</span><div class="contatos">${html}</div>`;
-  el.hidden = false;
+
+/* ============ DAQUI PARA BAIXO NÃO PRECISA MEXER ============ */
+const VAZIO = { tipo: '', titulo: '', detalhe: '', descricao: '', tags: '', link: '', arquivo: '', miniatura: '', mostrar: '' };
+const norm = s => String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase();
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+const safeUrl = u => { u = String(u || '').trim(); if (!u) return ''; if (/^(https?:|mailto:)/i.test(u)) return u; return /^[a-z][a-z0-9+.-]*:/i.test(u) ? '' : u; };
+const caminho = (v) => { v = String(v || '').trim(); if (!v) return ''; if (/^https?:/i.test(v)) return v; v = v.replace(/^\/+/, ''); return encodeURI(v.startsWith(PASTA) ? v : PASTA + v); };
+const ext = u => String(u || '').split(/[?#]/)[0].split('.').pop().toLowerCase();
+const isImg = u => ['png', 'jpg', 'jpeg', 'webp', 'gif', 'avif'].includes(ext(u));
+const rotuloDe = u => ext(u) === 'pdf' ? 'PDF' : (isImg(u) ? 'IMG' : 'LINK');
+const tags = a => a.map(t => `<span class="tag">${esc(t)}</span>`).join('');
+const slot = (url, label) => url ? `<a class="lnk" href="${esc(url)}" target="_blank" rel="noopener">${esc(label)} ▶</a>` : '';
+const lista = (list, card) => list.length ? list.map(card).join('') : '<div class="box"><p>Em breve.</p></div>';
+
+/* CSV */
+function parseCSV(t) {
+  const rows = []; let r = [], c = '', q = false;
+  for (let i = 0; i < t.length; i++) {
+    const ch = t[i];
+    if (q) { if (ch === '"') { if (t[i + 1] === '"') { c += '"'; i++; } else q = false; } else c += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === ',') { r.push(c); c = ''; }
+    else if (ch === '\n' || ch === '\r') { if (ch === '\r' && t[i + 1] === '\n') i++; r.push(c); c = ''; rows.push(r); r = []; }
+    else c += ch;
+  }
+  if (c !== '' || r.length) { r.push(c); rows.push(r); }
+  return rows;
+}
+function lerLinhas(tabela) {
+  if (!tabela.length) return [];
+  const cab = tabela[0].map(norm), idx = {};
+  Object.keys(VAZIO).forEach(k => { idx[k] = cab.indexOf(k); });
+  if (idx.tipo < 0) throw new Error('coluna "tipo" não encontrada');
+  return tabela.slice(1).map(l => { const o = {}; Object.keys(VAZIO).forEach(k => { o[k] = idx[k] >= 0 ? (l[idx[k]] || '') : ''; }); return o; }).filter(o => norm(o.tipo));
 }
 
+/* modelo */
+let M = null;
+function montar(linhas) {
+  const m = { nome: '', classe: '', ficha: [], sobre: [], destaques: [], cv: { formacao: [], experiencia: [], programa: [], ferramenta: [] }, analises: [], projCursos: [], certs: [], emCurso: [], sugestoes: [], sugIntro: '', contatos: [] };
+  const lst = s => String(s).split(';').map(x => x.trim()).filter(Boolean);
+  linhas.map(r => Object.assign({}, VAZIO, r)).filter(r => !['nao', 'n', '0', 'false', 'no'].includes(norm(r.mostrar))).forEach(r => {
+    const tipo = norm(r.tipo);
+    const link = safeUrl(r.link) || caminho(r.arquivo);
+    switch (tipo) {
+      case 'perfil': m.nome = r.titulo; m.classe = r.detalhe; break;
+      case 'ficha': m.ficha.push([r.titulo, r.detalhe]); break;
+      case 'sobre': m.sobre.push(r.descricao); break;
+      case 'destaque': m.destaques.push([r.titulo, r.detalhe]); break;
+      case 'formacao': case 'experiencia': case 'programa': m.cv[tipo].push({ t: r.titulo, s: r.detalhe }); break;
+      case 'ferramenta': m.cv.ferramenta.push(r.titulo); break;
+      case 'analise': m.analises.push({ t: r.titulo, d: r.descricao, tags: lst(r.tags), link: safeUrl(r.link) }); break;
+      case 'projeto_curso': m.projCursos.push({ t: r.titulo, d: r.descricao, tags: lst(r.tags), link: safeUrl(r.link) }); break;
+      case 'certificado': m.certs.push({ t: r.titulo, d: r.detalhe, tags: lst(r.tags), link, img: caminho(r.miniatura) }); break;
+      case 'em_andamento': m.emCurso.push({ t: r.titulo, d: r.detalhe, tags: lst(r.tags) }); break;
+      case 'sugestao': m.sugestoes.push({ t: r.titulo, d: r.detalhe, por: r.descricao, tags: lst(r.tags), link: safeUrl(r.link) }); break;
+      case 'intro_sugestoes': m.sugIntro = r.descricao; break;
+      case 'contato': m.contatos.push({ label: r.titulo, url: safeUrl(r.link) }); break;
+    }
+  });
+  return m;
+}
+
+/* peças visuais */
+const fileIcon = rot => `<svg class="ficon" viewBox="0 0 48 60" role="img" aria-label="Arquivo ${esc(rot)}" shape-rendering="crispEdges"><path class="pg" d="M4 4H32V8H36V12H40V16H44V56H4Z"/><path class="dobra" d="M32 4V16H44"/><rect class="rot" x="8" y="30" width="32" height="16"/><text x="24" y="42" text-anchor="middle" font-size="${rot.length > 3 ? 7 : 9}">${esc(rot)}</text></svg>`;
+const thumb = c => {
+  const src = c.img || (isImg(c.link) ? c.link : '');
+  let inner = '';
+  if (src) inner = `<img src="${esc(src)}" alt="Certificado: ${esc(c.t)}" loading="lazy" data-rotulo="${rotuloDe(c.link || src)}">`;
+  else if (c.link) inner = fileIcon(rotuloDe(c.link));
+  else return '';
+  return c.link
+    ? `<a class="thumb" href="${esc(c.link)}" target="_blank" rel="noopener" aria-label="Abrir certificado: ${esc(c.t)}">${inner}</a>`
+    : `<div class="thumb">${inner}</div>`;
+};
+const certCard = c => `<div class="box quest">${thumb(c)}<small>CERTIFICADO</small><h3>${esc(c.t)}</h3><p class="meta">${esc(c.d)}</p><div>${tags(c.tags)}</div><div style="margin-top:6px">${slot(c.link, 'VER CERTIFICADO')}</div></div>`;
+const cursoCard = c => `<div class="box quest"><small>EM ANDAMENTO</small><h3>${esc(c.t)}</h3><p class="meta">${esc(c.d)}</p><div>${tags(c.tags)}</div></div>`;
+const sugCard = c => `<div class="box quest"><small>INDICAÇÃO</small><h3>${esc(c.t)}</h3><p class="meta">${esc(c.d)}</p><p>${esc(c.por)}</p><div style="margin-top:14px">${tags(c.tags)}</div><div style="margin-top:6px">${slot(c.link, 'VER CURSO')}</div></div>`;
+const projCard = label => p => `<div class="box quest"><small>${label}</small><h3>${esc(p.t)}</h3><p>${esc(p.d)}</p><div style="margin-top:14px">${tags(p.tags)}</div><div style="margin-top:6px">${slot(p.link, 'VER NO GITHUB')}</div></div>`;
+
 const VIEWS = {
-  sobre: () => `
-    <div class="box"><span class="ti">Sobre mim</span>
-      <p class="lead">${D.sobre[0]}</p><p>${D.sobre[1]}</p>
-      <div class="stats">${D.stats.map(s => `<div class="stat"><small>${s[0]}</small>${s[1]}</div>`).join('')}</div>
-    </div>
-    <p class="hint">${NOTE}</p>`,
-  curriculo: () => `
-    <div><span class="sec">CURRÍCULO</span>
-      <div class="cols">${D.cv.map(b => `<div class="box"><span class="ti">${b.h}</span>${b.items
-        ? `<ul>${b.items.map(i => `<li><b>${i.t}</b><span>${i.s}</span></li>`).join('')}</ul>`
-        : `<div>${tags(b.chips)}</div>`}</div>`).join('')}</div>
-    </div>
-    <p class="hint">${NOTE}</p>`,
-  projetos: () => `
-    <div><span class="sec">ANÁLISES</span><div class="cols">${proj(D.analises, 'MISSÃO DE ANÁLISE')}</div></div>
-    <div><span class="sec">PROJETOS DE CURSOS</span><div class="cols">${proj(D.cursos, 'MISSÃO DE CURSO')}</div></div>
-    <p class="hint">${NOTE}</p>`,
-  certificados: () => `
-    <div><span class="sec">CERTIFICADOS</span><div class="cols">${lista(CERTS, certCard)}</div></div>
-    <div><span class="sec">EM ANDAMENTO</span><div class="cols">${lista(EM_CURSO, cursoCard)}</div></div>`,
-  sugestoes: () => `
-    <div><span class="sec">SUGESTÃO DE CURSOS</span><p class="intro">${SUG_INTRO}</p><div class="cols">${lista(SUGESTOES, sugCard)}</div></div>`
+  sobre: () => `<div class="box"><span class="ti">Sobre mim</span>${M.sobre.length ? `<p class="lead">${esc(M.sobre[0])}</p>${M.sobre.slice(1).map(t => `<p>${esc(t)}</p>`).join('')}` : '<p>Em breve.</p>'}${M.destaques.length ? `<div class="stats">${M.destaques.map(s => `<div class="stat"><small>${esc(s[0])}</small>${esc(s[1])}</div>`).join('')}</div>` : ''}</div>`,
+  curriculo: () => {
+    const grupos = [['Formação', 'formacao'], ['Experiência', 'experiencia'], ['Programas e iniciativas', 'programa'], ['Ferramentas e temas', 'ferramenta']].filter(g => M.cv[g[1]].length);
+    const caixas = grupos.map(g => `<div class="box"><span class="ti">${g[0]}</span>${g[1] === 'ferramenta' ? `<div>${tags(M.cv.ferramenta)}</div>` : `<ul>${M.cv[g[1]].map(i => `<li><b>${esc(i.t)}</b><span>${esc(i.s)}</span></li>`).join('')}</ul>`}</div>`).join('');
+    return `<div><span class="sec">CURRÍCULO</span><div class="cols">${caixas || '<div class="box"><p>Em breve.</p></div>'}</div></div>`;
+  },
+  projetos: () => `<div><span class="sec">ANÁLISES</span><div class="cols">${lista(M.analises, projCard('MISSÃO DE ANÁLISE'))}</div></div><div><span class="sec">PROJETOS DE CURSOS</span><div class="cols">${lista(M.projCursos, projCard('MISSÃO DE CURSO'))}</div></div>`,
+  certificados: () => `<div><span class="sec">CERTIFICADOS</span><div class="cols">${lista(M.certs, certCard)}</div></div><div><span class="sec">EM ANDAMENTO</span><div class="cols">${lista(M.emCurso, cursoCard)}</div></div>`,
+  sugestoes: () => `<div><span class="sec">SUGESTÃO DE CURSOS</span>${M.sugIntro ? `<p class="intro">${esc(M.sugIntro)}</p>` : ''}<div class="cols">${lista(M.sugestoes, sugCard)}</div></div>`
 };
 
+/* sprite do sorvete */
 const SPR = ['.....LL.....','....LLLL....','....LLLL....','...PPPPPP...','..PHHPPPPP..','.PHHPPPPPPP.','.PHPPPPPPPP.','.PPPPPPPPPP.','PPPPPPPPPPPP','PP.PPPPP.PP.','.OOOOOOOOOO.','..ODODODOD..','..DODODODO..','...ODODOD...','....DODO....','.....OO.....'];
 const PAL = { P: '#ff9ecf', H: '#ffe3f1', L: '#c6f23c', O: '#a64fd0', D: '#5e2a8a' };
 (function () {
@@ -235,8 +423,21 @@ const PAL = { P: '#ff9ecf', H: '#ffe3f1', L: '#c6f23c', O: '#a64fd0', D: '#5e2a8
   c.style.width = (12 * s) + 'px'; c.style.maxWidth = '100%'; c.style.height = 'auto';
 })();
 
-renderContatos();
+/* tela */
 const main = document.getElementById('main');
+main.addEventListener('error', e => {
+  const el = e.target;
+  if (el.tagName === 'IMG' && el.dataset.rotulo) el.outerHTML = fileIcon(el.dataset.rotulo);
+}, true);
+function aplicar() {
+  document.getElementById('nome').textContent = M.nome;
+  document.getElementById('classe').textContent = M.classe;
+  document.getElementById('ficha').innerHTML = M.ficha.map(f => `<div><dt>${esc(f[0])}</dt><dd>${esc(f[1])}</dd></div>`).join('');
+  const html = M.contatos.map(c => slot(c.url, c.label)).join('');
+  const el = document.getElementById('contatos');
+  el.hidden = !html;
+  el.innerHTML = html ? `<span class="ti">Contatos</span><div class="contatos">${html}</div>` : '';
+}
 function show(tab) {
   if (!VIEWS[tab]) tab = 'sobre';
   main.innerHTML = VIEWS[tab]();
@@ -259,8 +460,33 @@ document.querySelectorAll('.mi').forEach(b => {
     n.focus(); location.hash = n.dataset.tab;
   });
 });
-window.addEventListener('hashchange', () => show(fromHash()));
-show(fromHash());
+window.addEventListener('hashchange', () => { if (M) show(fromHash()); });
+
+/* carregamento: planilha primeiro, dados de reserva se falhar */
+function status(txt) {
+  if (!/[?&]status/.test(location.search)) return;
+  const p = document.getElementById('status');
+  p.textContent = 'Versão do site: ' + VERSAO + ' · Conteúdo: ' + txt;
+  p.hidden = false;
+}
+async function carregar() {
+  if (!PLANILHA_URL) { M = montar(PADRAO); status('dados do próprio arquivo (planilha ainda não configurada)'); return; }
+  main.innerHTML = '<p class="carregando">CARREGANDO...</p>';
+  try {
+    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 8000);
+    const resp = await fetch(PLANILHA_URL + (PLANILHA_URL.includes('?') ? '&' : '?') + 't=' + Date.now(), { signal: ctl.signal });
+    clearTimeout(to);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const linhas = lerLinhas(parseCSV(await resp.text()));
+    if (!linhas.length) throw new Error('planilha vazia');
+    M = montar(linhas);
+    status('planilha carregada (' + linhas.length + ' linhas)');
+  } catch (e) {
+    M = montar(PADRAO);
+    status('planilha indisponível (' + e.message + '), usando dados de reserva');
+  }
+}
+carregar().then(() => { aplicar(); show(fromHash()); });
 </script>
 
 </html>
