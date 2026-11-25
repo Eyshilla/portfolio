@@ -262,13 +262,43 @@ a { color: var(--orchid-deep); }
 .card-texto { margin-top: 10px; }
 .card-acoes { margin-top: auto; padding-top: 20px; }
 .miniatura {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 7 / 5;
+  margin: 3px 3px 18px;
+  overflow: hidden;
+  background: var(--pink-soft);
+  box-shadow: 0 0 0 3px var(--ink);
+}
+.miniatura img {
   display: block;
   width: 100%;
-  height: auto;
-  margin-bottom: 14px;
-  box-shadow: 0 0 0 2px var(--ink);
-  image-rendering: pixelated;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
 }
+.icone-arquivo { display: block; flex: none; }
+.ic-ink { fill: var(--ink); }
+.ic-folha { fill: var(--pink); }
+.ic-dobra { fill: var(--pink-soft); }
+.ic-etiqueta { fill: var(--lime); }
+.ic-texto { fill: var(--ink); font-family: var(--pixel); font-size: 8px; }
+
+.carregando {
+  font-family: var(--pixel);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--orchid-deep);
+}
+
+.status {
+  max-width: 1000px;
+  margin: 40px auto 0;
+  font-size: 18px;
+  opacity: .7;
+}
+.status[hidden] { display: none; }
 
 @media (max-width: 759px) {
   body { padding-top: 28px; }
@@ -312,10 +342,19 @@ a { color: var(--orchid-deep); }
   <main class="conteudo" id="conteudo"></main>
 </div>
 
+<footer class="status" id="status" role="contentinfo" hidden></footer>
+
 <script>
 'use strict';
 
-/* Dados do portfólio. A ordem das linhas é a ordem na tela.
+/* ===== CONFIGURAÇÃO =====
+   PLANILHA_URL: link CSV da planilha publicada (Arquivo > Compartilhar > Publicar na Web).
+   Vazio = usa os dados de PADRAO abaixo. */
+const PLANILHA_URL = '';
+const VERSAO = '2026-11-24 · v1';
+const PASTA = 'certificados/';
+
+/* Dados de reserva (usados sem planilha ou se ela falhar). A ordem das linhas é a ordem na tela.
    Para esconder uma linha, use mostrar: "não". */
 const PADRAO = [
   { tipo: "perfil", titulo: "EYSHILLA", detalhe: "Classe: estudante de Negócios e Produção", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
@@ -356,6 +395,8 @@ const PADRAO = [
 (function () {
   const CHAVES = ['tipo', 'titulo', 'detalhe', 'descricao', 'tags', 'link', 'arquivo', 'miniatura', 'mostrar'];
   const OCULTO = ['não', 'nao', 'n', '0', 'false'];
+  const EXT_IMAGEM = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'avif'];
+  const TEMPO_LIMITE_MS = 8000;
 
   const ABAS = [
     { id: 'sobre', rotulo: 'SOBRE MIM' },
@@ -386,6 +427,7 @@ const PADRAO = [
   const CORES = { P: '#ff9ecf', H: '#ffe3f1', L: '#c6f23c', O: '#a64fd0', D: '#5e2a8a' };
 
   const $ = (id) => document.getElementById(id);
+  let dados = [];
 
   function texto(v) {
     return v === undefined || v === null ? '' : String(v);
@@ -397,20 +439,84 @@ const PADRAO = [
     })[c]);
   }
 
+  function semAcento(v) {
+    return texto(v).normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+  }
+
   function visivel(linha) {
     return !OCULTO.includes(texto(linha.mostrar).trim().toLowerCase());
   }
 
-  const dados = (Array.isArray(PADRAO) ? PADRAO : [])
-    .filter((linha) => linha && typeof linha === 'object' && visivel(linha))
-    .map((linha) => {
-      const limpa = {};
-      CHAVES.forEach((k) => { limpa[k] = texto(linha[k]).trim(); });
-      limpa.tipo = limpa.tipo.toLowerCase();
-      return limpa;
-    });
-
   const doTipo = (tipo) => dados.filter((l) => l.tipo === tipo);
+
+  /* ---------- Planilha (CSV) ---------- */
+
+  /* Parser de CSV: campos entre aspas, "" escapado, vírgulas e quebras de linha dentro de campos, \r\n. */
+  function lerCsv(conteudo) {
+    const txt = texto(conteudo).replace(/^\uFEFF/, '');
+    const linhas = [];
+    let linha = [];
+    let campo = '';
+    let entreAspas = false;
+    for (let i = 0; i < txt.length; i++) {
+      const c = txt[i];
+      if (entreAspas) {
+        if (c === '"') {
+          if (txt[i + 1] === '"') { campo += '"'; i++; } else { entreAspas = false; }
+        } else {
+          campo += c;
+        }
+      } else if (c === '"') {
+        entreAspas = true;
+      } else if (c === ',') {
+        linha.push(campo); campo = '';
+      } else if (c === '\r' || c === '\n') {
+        if (c === '\r' && txt[i + 1] === '\n') i++;
+        linha.push(campo); linhas.push(linha);
+        linha = []; campo = '';
+      } else {
+        campo += c;
+      }
+    }
+    if (campo !== '' || linha.length) { linha.push(campo); linhas.push(linha); }
+    return linhas.filter((l) => l.some((v) => v.trim() !== ''));
+  }
+
+  function linhasDaPlanilha(conteudo) {
+    const tabela = lerCsv(conteudo);
+    if (!tabela.length) throw new Error('planilha vazia');
+    const cabecalho = tabela[0].map(semAcento);
+    const indice = {};
+    CHAVES.forEach((k) => { indice[k] = cabecalho.indexOf(k); });
+    if (indice.tipo < 0) throw new Error('coluna "tipo" não encontrada');
+    const linhas = tabela.slice(1).map((valores) => {
+      const obj = {};
+      CHAVES.forEach((k) => { obj[k] = indice[k] >= 0 ? texto(valores[indice[k]]) : ''; });
+      return obj;
+    }).filter((l) => l.tipo.trim() !== '');
+    if (!linhas.length) throw new Error('planilha vazia');
+    return linhas;
+  }
+
+  async function carregarPlanilha(url) {
+    const controle = new AbortController();
+    const timer = setTimeout(() => controle.abort(), TEMPO_LIMITE_MS);
+    try {
+      const endereco = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+      let resposta;
+      try {
+        resposta = await fetch(endereco, { signal: controle.signal, cache: 'no-store' });
+      } catch (e) {
+        throw new Error(e && e.name === 'AbortError' ? 'tempo esgotado' : 'sem conexão');
+      }
+      if (resposta.status !== 200) throw new Error('HTTP ' + resposta.status);
+      return linhasDaPlanilha(await resposta.text());
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  /* ---------- Links e caminhos ---------- */
 
   /* Aceita apenas http:, https:, mailto: ou caminhos relativos. */
   function urlSegura(valor) {
@@ -424,18 +530,29 @@ const PADRAO = [
     return url;
   }
 
-  function caminhoCertificado(valor) {
-    const nome = texto(valor).trim();
+  /* arquivo/miniatura: só o nome do arquivo (vai para PASTA); http(s) é usado como está. */
+  function caminhoArquivo(valor) {
+    let nome = texto(valor).trim();
     if (!nome) return '';
-    if (/^https?:/i.test(nome) || /[\/\\]/.test(nome)) return urlSegura(nome);
-    return 'certificados/' + encodeURIComponent(nome);
+    if (/^https?:/i.test(nome.replace(/[\u0000-\u0020]/g, ''))) return urlSegura(nome);
+    if (nome.indexOf(PASTA) === 0) nome = nome.slice(PASTA.length);
+    return urlSegura(PASTA + encodeURI(nome).replace(/#/g, '%23').replace(/\?/g, '%3F'));
+  }
+
+  function extensao(url) {
+    const caminho = texto(url).split(/[?#]/)[0];
+    const m = /\.([a-z0-9]+)$/i.exec(caminho);
+    return m ? m[1].toLowerCase() : '';
+  }
+
+  function atributosLink(href) {
+    return /^mailto:/i.test(href.replace(/[\u0000-\u0020]/g, '')) ? '' : ' target="_blank" rel="noopener"';
   }
 
   function botao(url, rotulo) {
     const href = urlSegura(url);
     if (!href) return '';
-    const alvo = /^mailto:/i.test(href.replace(/[\u0000-\u0020]/g, '')) ? '' : ' target="_blank" rel="noopener"';
-    return '<a class="btn" href="' + esc(href) + '"' + alvo + '>' + esc(rotulo) + '</a>';
+    return '<a class="btn" href="' + esc(href) + '"' + atributosLink(href) + '>' + esc(rotulo) + '</a>';
   }
 
   function tags(valor) {
@@ -457,7 +574,21 @@ const PADRAO = [
     return '<section class="bloco"><h2 class="selo">' + esc(selo) + '</h2>' + corpo + '</section>';
   }
 
-  /* Mascote */
+  /* Ícone de arquivo em pixel art (48x60). */
+  function iconeArquivo(rotulo) {
+    return '<svg class="icone-arquivo" width="48" height="60" viewBox="0 0 48 60" shape-rendering="crispEdges" ' +
+      'aria-hidden="true" focusable="false" data-icone="' + esc(rotulo) + '">' +
+      '<path class="ic-ink" d="M6 2H34V6H38V10H42V14H46V58H6Z"/>' +
+      '<path class="ic-folha" d="M10 6H30V18H42V54H10Z"/>' +
+      '<path class="ic-dobra" d="M30 6H32V10H36V14H40V16H30Z"/>' +
+      '<path class="ic-ink" d="M30 16H42V18H30ZM30 6H32V16H30ZM32 8H34V10H32ZM34 10H36V12H34ZM36 12H38V14H36ZM38 14H40V16H38Z"/>' +
+      '<rect class="ic-ink" x="0" y="28" width="42" height="20"/>' +
+      '<rect class="ic-etiqueta" x="2" y="30" width="38" height="16"/>' +
+      '<text class="ic-texto" x="21" y="42" text-anchor="middle">' + esc(rotulo) + '</text>' +
+      '</svg>';
+  }
+
+  /* ---------- Mascote ---------- */
   function desenharMascote() {
     const canvas = $('mascote');
     const ctx = canvas.getContext && canvas.getContext('2d');
@@ -474,26 +605,22 @@ const PADRAO = [
     });
   }
 
-  /* Coluna esquerda */
+  /* ---------- Coluna esquerda ---------- */
   function montarLateral() {
     const perfil = doTipo('perfil')[0];
-    if (perfil) {
-      $('nome').textContent = perfil.titulo;
-      $('classe').textContent = perfil.detalhe;
-      if (perfil.titulo) document.title = perfil.titulo + ' · Portfólio';
-    }
+    $('nome').textContent = perfil ? perfil.titulo : '';
+    $('classe').textContent = perfil ? perfil.detalhe : '';
+    if (perfil && perfil.titulo) document.title = perfil.titulo + ' · Portfólio';
     $('ficha').innerHTML = doTipo('ficha').slice(0, 3).map((l) =>
       '<div class="ficha-item"><dt>' + esc(l.titulo) + '</dt><dd>' + esc(l.detalhe) + '</dd></div>'
     ).join('');
 
     const contatos = doTipo('contato').map((l) => botao(l.link, l.titulo)).filter(Boolean);
-    if (contatos.length) {
-      $('contatos').innerHTML = contatos.join('');
-      $('caixa-contatos').hidden = false;
-    }
+    $('contatos').innerHTML = contatos.join('');
+    $('caixa-contatos').hidden = !contatos.length;
   }
 
-  /* Abas */
+  /* ---------- Abas ---------- */
   function painelSobre() {
     const paragrafos = doTipo('sobre').filter((l) => l.descricao);
     let html = '';
@@ -528,9 +655,7 @@ const PADRAO = [
     }).filter(Boolean);
 
     const ferramentas = doTipo('ferramenta').map((l) => l.titulo).filter(Boolean);
-    if (ferramentas.length) {
-      caixas.push(caixa('Ferramentas e temas', tags(ferramentas.join(';'))));
-    }
+    if (ferramentas.length) caixas.push(caixa('Ferramentas e temas', tags(ferramentas.join(';'))));
     return caixas.length ? '<div class="grade grade-curriculo">' + caixas.join('') + '</div>' : emBreve();
   }
 
@@ -553,12 +678,23 @@ const PADRAO = [
       bloco('PROJETOS DE CURSOS', grade(doTipo('projeto_curso'), (l) => cardProjeto(l, 'MISSÃO DE CURSO')));
   }
 
+  function miniaturaCertificado(l, destino) {
+    if (!destino) return '';
+    const ext = extensao(destino);
+    const rotuloIcone = ext === 'pdf' ? 'PDF' : 'LINK';
+    let imagem = caminhoArquivo(l.miniatura);
+    if (!imagem && EXT_IMAGEM.includes(ext)) imagem = destino;
+    const conteudo = imagem
+      ? '<img src="' + esc(imagem) + '" alt="Certificado: ' + esc(l.titulo) + '" loading="lazy" data-icone="' + rotuloIcone + '">'
+      : iconeArquivo(rotuloIcone);
+    return '<a class="miniatura" href="' + esc(destino) + '"' + atributosLink(destino) +
+      ' aria-label="Abrir certificado: ' + esc(l.titulo) + '">' + conteudo + '</a>';
+  }
+
   function cardCertificado(l) {
-    const destino = urlSegura(l.link) || caminhoCertificado(l.arquivo);
-    const mini = caminhoCertificado(l.miniatura);
-    const miniOk = mini && !/^mailto:/i.test(mini);
+    const destino = urlSegura(l.link) || caminhoArquivo(l.arquivo);
     return '<article class="box card">' +
-      (miniOk ? '<img class="miniatura" src="' + esc(mini) + '" alt="Miniatura: ' + esc(l.titulo) + '" loading="lazy">' : '') +
+      miniaturaCertificado(l, destino) +
       '<p class="legenda">CONQUISTA</p>' +
       '<h3 class="card-titulo">' + esc(l.titulo) + '</h3>' +
       (l.detalhe ? '<p class="card-detalhe">' + esc(l.detalhe) + '</p>' : '') +
@@ -607,16 +743,35 @@ const PADRAO = [
     sugestoes: painelSugestoes
   };
 
-  function montarAbas() {
+  function montarMenu() {
     $('menu').innerHTML = ABAS.map((a) =>
       '<button type="button" class="btn menu-item" role="tab" id="aba-' + a.id + '" ' +
       'aria-controls="painel-' + a.id + '" aria-selected="false" tabindex="-1" data-aba="' + a.id + '">' +
       esc(a.rotulo) + '</button>'
     ).join('');
+  }
+
+  function montarPaineis() {
     $('conteudo').innerHTML = ABAS.map((a) =>
       '<section class="painel" role="tabpanel" id="painel-' + a.id + '" aria-labelledby="aba-' + a.id + '" tabindex="0" hidden>' +
       MONTADORES[a.id]() + '</section>'
     ).join('');
+  }
+
+  /* Planilha e PADRAO passam por aqui: o visual é o mesmo. */
+  function montar(linhas) {
+    dados = (Array.isArray(linhas) ? linhas : [])
+      .filter((linha) => linha && typeof linha === 'object' && visivel(linha))
+      .map((linha) => {
+        const limpa = {};
+        CHAVES.forEach((k) => { limpa[k] = texto(linha[k]).trim(); });
+        limpa.tipo = semAcento(limpa.tipo);
+        return limpa;
+      })
+      .filter((linha) => linha.tipo);
+    montarLateral();
+    montarPaineis();
+    mostrarAba(abaDoHash());
   }
 
   function abaDoHash() {
@@ -629,9 +784,10 @@ const PADRAO = [
     ABAS.forEach((a) => {
       const ativa = a.id === id;
       const aba = $('aba-' + a.id);
+      const painel = $('painel-' + a.id);
       aba.setAttribute('aria-selected', ativa ? 'true' : 'false');
       aba.tabIndex = ativa ? 0 : -1;
-      $('painel-' + a.id).hidden = !ativa;
+      if (painel) painel.hidden = !ativa;
     });
   }
 
@@ -639,6 +795,12 @@ const PADRAO = [
     if (location.hash !== '#' + id) location.hash = id;
     mostrarAba(id);
     if (focar) $('aba-' + id).focus();
+  }
+
+  function trocarPorIcone(img) {
+    const molde = document.createElement('div');
+    molde.innerHTML = iconeArquivo(img.getAttribute('data-icone') || 'LINK');
+    img.replaceWith(molde.firstChild);
   }
 
   function ligarEventos() {
@@ -665,13 +827,49 @@ const PADRAO = [
       irPara(ABAS[prox].id, true);
     });
     window.addEventListener('hashchange', () => mostrarAba(abaDoHash()));
+    /* Miniatura que não carrega vira ícone. */
+    document.addEventListener('error', (ev) => {
+      const img = ev.target;
+      if (img && img.tagName === 'IMG' && img.parentNode && img.parentNode.classList &&
+          img.parentNode.classList.contains('miniatura')) {
+        trocarPorIcone(img);
+      }
+    }, true);
   }
 
-  desenharMascote();
-  montarLateral();
-  montarAbas();
-  ligarEventos();
-  mostrarAba(abaDoHash());
+  function mostrarStatus(conteudo) {
+    if (!new URLSearchParams(location.search).has('status')) return;
+    const rodape = $('status');
+    rodape.textContent = 'Versão do site: ' + VERSAO + ' · Conteúdo: ' + conteudo;
+    rodape.hidden = false;
+  }
+
+  function iniciar() {
+    desenharMascote();
+    montarMenu();
+    ligarEventos();
+    mostrarAba(abaDoHash());
+
+    const url = texto(PLANILHA_URL).trim();
+    if (!url) {
+      montar(PADRAO);
+      mostrarStatus('dados do próprio arquivo');
+      return;
+    }
+    $('conteudo').innerHTML = '<p class="carregando" role="status">CARREGANDO...</p>';
+    carregarPlanilha(url)
+      .then((linhas) => {
+        montar(linhas);
+        mostrarStatus('planilha carregada (' + linhas.length + ' linhas)');
+      })
+      .catch((erro) => {
+        montar(PADRAO);
+        const motivo = erro && erro.message ? erro.message : 'erro desconhecido';
+        mostrarStatus('planilha indisponível (' + motivo + '), usando dados de reserva');
+      });
+  }
+
+  iniciar();
 })();
 </script>
 </body>
