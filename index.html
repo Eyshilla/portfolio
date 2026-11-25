@@ -620,7 +620,8 @@ const PADRAO = [
   }
 
   function abaDoHash() {
-    const id = decodeURIComponent(location.hash.replace(/^#/, ''));
+    let id = location.hash.replace(/^#/, '');
+    try { id = decodeURIComponent(id); } catch (e) { /* fragmento malformado: usa o padrão */ }
     return ABAS.some((a) => a.id === id) ? id : 'sobre';
   }
 
