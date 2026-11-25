@@ -427,7 +427,7 @@ const PADRAO = [
   function caminhoCertificado(valor) {
     const nome = texto(valor).trim();
     if (!nome) return '';
-    if (/[:\/\\]/.test(nome)) return urlSegura(nome);
+    if (/^https?:/i.test(nome) || /[\/\\]/.test(nome)) return urlSegura(nome);
     return 'certificados/' + encodeURIComponent(nome);
   }
 
