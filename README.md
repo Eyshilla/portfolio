@@ -57,4 +57,4 @@ Para gerar o `conteudo-portfolio.xlsx` de novo a partir do `PADRAO`: `pip instal
 3. Selecione a branch **main** e a pasta **/ (root)** e clique em **Save**.
 4. Depois de alguns minutos o site fica disponível em `https://<seu-usuario>.github.io/<nome-do-repositorio>/`.
 
-Para ver localmente, basta abrir o `index.html` no navegador.
+Para ver localmente, basta abrir o `index.html` no navegador. Aberto direto do computador (endereço `file://`), o Google bloqueia a leitura da planilha e o site mostra os dados do `PADRAO`. No GitHub Pages a planilha carrega normalmente.
