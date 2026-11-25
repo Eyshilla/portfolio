@@ -1,15 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Portfólio da Eyshilla</title>
-
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<title>Eyshilla · Portfólio</title>
+<meta name="description" content="Portfólio da Eyshilla em pixel art: currículo, projetinhos, certificados e sugestões de cursos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
-/* Layout: ficha da personagem + menu à esquerda, caixa de conteúdo NES à direita; no celular tudo empilha */
 :root {
   --night: #2a1244;
+  --ink: #2a1244;
   --orchid: #a64fd0;
   --orchid-deep: #5e2a8a;
   --pink: #ff9ecf;
@@ -17,476 +19,660 @@
   --pink-deep: #e8579f;
   --lime: #c6f23c;
   --lime-deep: #9bc41f;
-  --ink: #2a1244;
   --white: #ffffff;
-  --px: 'Press Start 2P', ui-monospace, monospace;
-  --body: 'VT323', ui-monospace, monospace;
-  --frame: 0 -4px 0 0 var(--ink), 0 4px 0 0 var(--ink), -4px 0 0 0 var(--ink), 4px 0 0 0 var(--ink);
-  color-scheme: light;
+  --pixel: "Press Start 2P", ui-monospace, monospace;
+  --texto: "VT323", ui-monospace, monospace;
+  --moldura: 0 -4px 0 0 var(--ink), 0 4px 0 0 var(--ink), -4px 0 0 0 var(--ink), 4px 0 0 0 var(--ink);
 }
-* { box-sizing: border-box; }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
 body {
   margin: 0;
-  padding-block: 28px 56px;
-  padding-left: max(20px, env(safe-area-inset-left, 0px));
-  padding-right: max(20px, env(safe-area-inset-right, 0px));
-  font-family: var(--body);
-  font-size: 22px;
-  line-height: 1.25;
-  background-color: var(--pink-soft);
-  background-image: radial-gradient(rgba(166,79,208,.16) 2px, transparent 2px);
-  background-size: 20px 20px;
+  padding: 40px 20px 56px;
+  min-width: 0;
   color: var(--ink);
+  background-color: var(--pink-soft);
+  background-image: radial-gradient(rgba(166, 79, 208, .16) 2px, transparent 2px);
+  background-size: 20px 20px;
+  font-family: var(--texto);
+  font-size: 22px;
+  line-height: 1.15;
+  overflow-wrap: break-word;
 }
-h1, h2, h3, p, dl, dd { margin: 0; }
-canvas { image-rendering: pixelated; display: block; }
-:focus-visible { outline: 3px dashed var(--orchid-deep); outline-offset: 4px; }
 
-.wrap { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 280px) minmax(0, 1fr); gap: 36px 32px; align-items: start; }
-.side { display: grid; gap: 32px; min-width: 0; }
+h1, h2, h3, p, ul, dl, dd { margin: 0; }
+ul { padding: 0; list-style: none; }
 
-/* caixa NES */
-.box { position: relative; min-width: 0; background: var(--white); box-shadow: var(--frame); margin: 4px; padding: 22px 20px 18px; }
-.box > .ti { position: absolute; top: -17px; left: 12px; background: var(--white); padding: 0 8px; font-family: var(--px); font-size: 10px; line-height: 1.4; color: var(--orchid-deep); }
+a { color: var(--orchid-deep); }
 
-/* ficha */
-.sbox { background: var(--night); padding: 12px; display: inline-block; box-shadow: var(--frame); margin: 4px; }
-.name { font-family: var(--px); font-size: 15px; line-height: 1.3; margin: 16px 0 6px; overflow-wrap: anywhere; color: var(--orchid-deep); }
-.class { font-size: 22px; margin-bottom: 14px; }
-.ficha { display: grid; gap: 10px; }
-.ficha div { border-top: 3px dotted var(--orchid); padding-top: 8px; }
-.ficha dt { font-family: var(--px); font-size: 8px; line-height: 1.4; color: var(--pink-deep); margin-bottom: 5px; }
-.ficha dd { font-size: 21px; }
+:focus-visible { outline: 3px dashed var(--orchid-deep); outline-offset: 5px; }
 
-/* menu */
-.menu { display: grid; gap: 14px; }
-.mi {
-  position: relative; text-align: left; width: 100%; cursor: pointer; border: 0; margin: 0;
-  font-family: var(--px); font-size: 11px; line-height: 1.4; color: var(--ink);
-  padding: 14px 12px 14px 32px; background: var(--pink);
-  box-shadow: var(--frame), inset -4px -4px 0 0 var(--pink-deep);
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 36px 32px;
+  align-items: start;
 }
-.mi:hover { filter: brightness(1.06); }
-.mi:active { transform: translateY(3px); }
-.mi[aria-selected="true"] { background: var(--lime); box-shadow: var(--frame), inset -4px -4px 0 0 var(--lime-deep); }
-.mi[aria-selected="true"]::before { content: ""; position: absolute; left: 11px; top: 50%; margin-top: -6px; border: 6px solid transparent; border-left: 9px solid var(--ink); border-right: 0; }
 
-/* conteúdo */
-.main { display: grid; gap: 40px; }
-.main h2 { font-family: var(--px); font-size: 14px; line-height: 1.5; color: var(--orchid-deep); margin-bottom: 14px; }
-.main p + p { margin-top: 12px; }
-.lead { font-size: 26px; }
-.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 40px 26px; }
-ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-li { padding-left: 24px; position: relative; }
-li::before { content: ""; position: absolute; left: 2px; top: 7px; width: 10px; height: 10px; background: var(--orchid); box-shadow: 3px 3px 0 var(--pink); }
-li b { display: block; font-weight: 400; }
-li span { color: var(--orchid-deep); font-size: 20px; }
-.tag { display: inline-block; font-family: var(--px); font-size: 8px; line-height: 1.4; padding: 6px 7px; margin: 0 8px 8px 2px; background: var(--lime); color: var(--ink); box-shadow: 0 0 0 2px var(--ink); }
-.box h3 { font-family: var(--px); font-size: 11px; line-height: 1.5; color: var(--orchid-deep); margin-bottom: 10px; }
-.sec { font-family: var(--px); font-size: 11px; line-height: 1.4; display: inline-block; background: var(--pink); padding: 9px 11px; margin-bottom: 30px; box-shadow: 4px 4px 0 var(--ink); }
-.quest small { display: block; font-family: var(--px); font-size: 8px; color: var(--pink-deep); margin-bottom: 10px; }
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 16px; margin-top: 20px; }
-.stat { background: var(--pink-soft); padding: 10px 12px; box-shadow: 0 0 0 3px var(--ink); }
-.stat small { display: block; font-family: var(--px); font-size: 8px; color: var(--orchid-deep); margin-bottom: 7px; }
-.hint { font-size: 20px; opacity: .8; max-width: 60ch; }
-.hint:empty { display: none; }
-.meta { font-size: 20px; color: var(--orchid-deep); margin-bottom: 10px; }
-.modelo { opacity: .7; }
-.thumb { display: flex; align-items: center; justify-content: center; aspect-ratio: 7 / 5; overflow: hidden; margin: 3px 3px 18px; background: var(--pink-soft); box-shadow: 0 0 0 3px var(--ink); color: var(--orchid-deep); text-decoration: none; text-align: center; }
-a.thumb:hover { filter: brightness(1.05); }
-.thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
-.thumb-vazio { font-family: var(--px); font-size: 8px; line-height: 1.6; padding: 12px; border: 3px dashed var(--orchid); margin: 10px; }
-.ficon { width: 64px; height: auto; }
-.ficon .pg { fill: var(--pink); stroke: var(--ink); stroke-width: 3; }
-.ficon .dobra { fill: none; stroke: var(--ink); stroke-width: 3; }
-.ficon .rot { fill: var(--lime); stroke: var(--ink); stroke-width: 2; }
-.ficon text { fill: var(--ink); font-family: var(--px); }
-.intro { font-size: 24px; margin-bottom: 26px; max-width: 60ch; }
+.lateral { display: grid; gap: 36px; min-width: 0; }
+.conteudo { min-width: 0; }
 
-.lnk { display: inline-block; margin: 4px 8px 4px 2px; padding: 10px 12px; font-family: var(--px); font-size: 9px; line-height: 1.4; color: var(--ink); background: var(--pink); text-decoration: none; box-shadow: var(--frame); }
-a.lnk:hover { background: var(--lime); }
-.lnk.empty { background: transparent; box-shadow: none; border: 3px dashed var(--orchid); color: var(--orchid-deep); }
-.contatos { display: grid; gap: 6px; }
-@media (max-width: 760px) {
-  .wrap { grid-template-columns: minmax(0, 1fr); }
-  .menu { grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); }
+/* Caixa NES */
+.box {
+  position: relative;
+  background: var(--white);
+  box-shadow: var(--moldura);
+  padding: 24px 20px 20px;
+  min-width: 0;
 }
-.status { max-width: 1000px; margin: 40px auto 0; font-size: 18px; opacity: .7; }
-.carregando { font-family: var(--px); font-size: 11px; color: var(--orchid-deep); padding: 8px 4px; }
+.box-titulo {
+  position: absolute;
+  top: -9px;
+  left: 14px;
+  max-width: calc(100% - 28px);
+  padding: 0 8px;
+  background: var(--white);
+  color: var(--orchid-deep);
+  font-family: var(--pixel);
+  font-size: 10px;
+  font-weight: normal;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+/* Botões */
+.btn {
+  display: inline-block;
+  padding: 11px 14px 13px;
+  border: 0;
+  background: var(--pink);
+  color: var(--ink);
+  box-shadow: var(--moldura), inset -4px -4px 0 0 var(--pink-deep);
+  font-family: var(--pixel);
+  font-size: 9px;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn:hover { background: var(--pink-soft); }
+.btn:active { transform: translateY(3px); }
+
+/* Etiquetas */
+.tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.box-titulo + .tags { margin-top: 0; }
+.tag {
+  display: inline-block;
+  padding: 5px 7px 4px;
+  background: var(--lime);
+  color: var(--ink);
+  box-shadow: 0 0 0 2px var(--ink);
+  font-family: var(--pixel);
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+/* Lista com marcador quadrado */
+.lista-quadrada { display: grid; gap: 14px; }
+.lista-quadrada li { position: relative; padding-left: 24px; }
+.lista-quadrada li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 10px;
+  height: 10px;
+  background: var(--orchid);
+  box-shadow: 3px 3px 0 0 var(--pink);
+}
+.item-titulo { display: block; font-size: 22px; }
+.item-detalhe { display: block; font-size: 20px; color: var(--orchid-deep); }
+
+/* Jogadora 1 */
+.jogadora { text-align: center; }
+.mascote-moldura {
+  display: inline-block;
+  margin: 8px 0 18px;
+  padding: 14px;
+  background: var(--night);
+  box-shadow: var(--moldura);
+  line-height: 0;
+}
+.mascote-moldura canvas {
+  display: block;
+  width: 96px;
+  height: 128px;
+  image-rendering: pixelated;
+}
+.nome {
+  font-family: var(--pixel);
+  font-size: 15px;
+  font-weight: normal;
+  line-height: 1.5;
+  color: var(--orchid-deep);
+}
+.classe { margin-top: 6px; font-size: 20px; }
+.ficha { margin-top: 16px; text-align: left; }
+.ficha-item { padding: 10px 0; }
+.ficha-item + .ficha-item { border-top: 2px dotted var(--orchid); }
+.ficha-item:last-child { padding-bottom: 0; }
+.ficha dt {
+  font-family: var(--pixel);
+  font-size: 8px;
+  line-height: 1.5;
+  color: var(--pink-deep);
+}
+.ficha dd { margin-top: 4px; font-size: 20px; }
+
+/* Menu */
+.menu { display: grid; gap: 16px; padding: 4px; }
+.menu-item {
+  position: relative;
+  width: 100%;
+  padding: 13px 12px 15px 30px;
+  text-align: left;
+  font-size: 10px;
+}
+.menu-item[aria-selected="true"] {
+  background: var(--lime);
+  box-shadow: var(--moldura), inset -4px -4px 0 0 var(--lime-deep);
+}
+.menu-item[aria-selected="true"]::before {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  margin-top: -7px;
+  border-style: solid;
+  border-width: 6px 0 6px 8px;
+  border-color: transparent transparent transparent var(--ink);
+}
+
+.contatos { display: grid; gap: 16px; padding-top: 8px; }
+.contatos .btn { width: 100%; }
+
+/* Painéis */
+.painel { display: grid; gap: 36px; }
+.painel[hidden] { display: none; }
+
+.texto-sobre { display: grid; gap: 12px; }
+.texto-sobre .abertura { font-size: 26px; }
+
+.destaques {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+  padding: 3px;
+}
+.destaque {
+  padding: 14px 12px;
+  background: var(--pink-soft);
+  box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink);
+}
+.destaque-rotulo {
+  display: block;
+  font-family: var(--pixel);
+  font-size: 8px;
+  line-height: 1.5;
+  color: var(--pink-deep);
+}
+.destaque-valor { display: block; margin-top: 6px; font-size: 22px; }
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 36px 28px;
+}
+.grade-curriculo { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+
+.bloco { display: grid; gap: 28px; }
+.selo {
+  justify-self: start;
+  padding: 9px 12px 8px;
+  background: var(--pink);
+  color: var(--ink);
+  box-shadow: 4px 4px 0 0 var(--ink);
+  font-family: var(--pixel);
+  font-size: 11px;
+  font-weight: normal;
+  line-height: 1.5;
+}
+
+.card { display: flex; flex-direction: column; }
+.legenda {
+  font-family: var(--pixel);
+  font-size: 8px;
+  line-height: 1.5;
+  color: var(--pink-deep);
+}
+.card-titulo {
+  margin-top: 10px;
+  font-family: var(--pixel);
+  font-size: 11px;
+  font-weight: normal;
+  line-height: 1.6;
+  color: var(--orchid-deep);
+}
+.card-detalhe { margin-top: 6px; font-size: 20px; color: var(--orchid-deep); }
+.card-texto { margin-top: 10px; }
+.card-acoes { margin-top: auto; padding-top: 20px; }
+.miniatura {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 14px;
+  box-shadow: 0 0 0 2px var(--ink);
+  image-rendering: pixelated;
+}
+
+@media (max-width: 759px) {
+  body { padding-top: 28px; }
+  .container { grid-template-columns: minmax(0, 1fr); }
+  .menu { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 18px 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .btn:active { transform: none; }
+}
 </style>
-
-<div class="wrap">
-  <aside class="side">
-    <div class="box">
-      <span class="ti">Jogadora 1</span>
-      <div class="sbox"><canvas id="spr" aria-hidden="true"></canvas></div>
-      <p class="name" id="nome"></p>
-      <p class="class" id="classe"></p>
+</head>
+<body>
+<div class="container">
+  <aside class="lateral">
+    <section class="box jogadora" aria-labelledby="titulo-jogadora">
+      <h2 class="box-titulo" id="titulo-jogadora">Jogadora 1</h2>
+      <div class="mascote-moldura">
+        <canvas id="mascote" width="96" height="128" role="img" aria-label="Mascote: sorvete em pixel art"></canvas>
+      </div>
+      <h1 class="nome" id="nome"></h1>
+      <p class="classe" id="classe"></p>
       <dl class="ficha" id="ficha"></dl>
-    </div>
-    <nav class="menu" role="tablist" aria-label="Menu do portfólio">
-      <button class="mi" role="tab" id="t-sobre" data-tab="sobre">SOBRE MIM</button>
-      <button class="mi" role="tab" id="t-curriculo" data-tab="curriculo">CURRÍCULO</button>
-      <button class="mi" role="tab" id="t-projetos" data-tab="projetos">PROJETINHOS</button>
-      <button class="mi" role="tab" id="t-certificados" data-tab="certificados">CERTIFICADOS</button>
-      <button class="mi" role="tab" id="t-sugestoes" data-tab="sugestoes">SUGESTÃO DE CURSOS</button>
+    </section>
+
+    <nav aria-label="Seções do portfólio">
+      <div class="menu" id="menu" role="tablist" aria-orientation="vertical"></div>
     </nav>
-    <div class="box" id="contatos" hidden></div>
+
+    <section class="box" id="caixa-contatos" aria-labelledby="titulo-contatos" hidden>
+      <h2 class="box-titulo" id="titulo-contatos">Contatos</h2>
+      <div class="contatos" id="contatos"></div>
+    </section>
   </aside>
-  <main class="main" id="main" role="tabpanel" aria-live="polite"></main>
+
+  <main class="conteudo" id="conteudo"></main>
 </div>
-<p class="status" id="status" hidden></p>
 
 <script>
-/* ============ CONFIGURAÇÃO (a única parte do código que você mexe, e só uma vez) ============ */
-// Cole entre as aspas o link CSV publicado da planilha. Enquanto estiver vazio, o site usa os dados de reserva abaixo.
-const PLANILHA_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQx4OVAKds3z2o_RN6U9eyFhv2R8ifpEwvVZ26cSGvzJRuINZLtIz2a-L3yGzyzlDZI9KwCaFb-_Nee/pub?output=csv';
-const VERSAO = '2026-11-06 · v1';      // confira no rodapé abrindo o site com ?status no final do endereço
-const PASTA = 'certificados/';    // pasta do repositório onde ficam os PDFs e imagens dos certificados
+'use strict';
 
-/* ============ DADOS DE RESERVA (mesmo formato da planilha; aparecem se a planilha não carregar) ============ */
+/* Dados do portfólio. A ordem das linhas é a ordem na tela.
+   Para esconder uma linha, use mostrar: "não". */
 const PADRAO = [
- {
-  "tipo": "perfil",
-  "titulo": "EYSHILLA",
-  "detalhe": "Classe: estudante de Negócios e Produção"
- },
- {
-  "tipo": "ficha",
-  "titulo": "MISSÃO ATUAL",
-  "detalhe": "Business Intelligence"
- },
- {
-  "tipo": "ficha",
-  "titulo": "GUILDA",
-  "detalhe": "Rock Encantech (estágio em Planejamento e Eficiência)"
- },
- {
-  "tipo": "ficha",
-  "titulo": "FASE",
-  "detalhe": "7º semestre · dez/2028"
- },
- {
-  "tipo": "sobre",
-  "descricao": "Oi! Eu sou a Eyshilla. Estudo Negócios e Produção na UNIVESP (7º semestre) e faço estágio em Planejamento e Eficiência na Rock Encantech. Quero trabalhar com Business Intelligence: transformar dados e processos em decisões melhores."
- },
- {
-  "tipo": "sobre",
-  "descricao": "Em 2026 participei do Sebrae Supernova e em 2025 ajudei a fundar um clube de pesquisa científica na minha faculdade, que levou a instituição a lançar um programa de iniciação científica em 2026."
- },
- {
-  "tipo": "destaque",
-  "titulo": "SEMESTRE",
-  "detalhe": "7º na UNIVESP"
- },
- {
-  "tipo": "destaque",
-  "titulo": "FORMATURA",
-  "detalhe": "dez/2028"
- },
- {
-  "tipo": "destaque",
-  "titulo": "FOCO",
-  "detalhe": "Business Intelligence e Dados"
- },
- {
-  "tipo": "formacao",
-  "titulo": "Engenharia de Produção",
-  "detalhe": "UNIVESP · 7º semestre · formatura prevista em dez/2028"
- },
- {
-  "tipo": "formacao",
-  "titulo": "Tecnologia Mecânica na modalidade Processos de Produção",
-  "detalhe": "Formação tecnológica"
- },
- {
-  "tipo": "experiencia",
-  "titulo": "Estágio em Planejamento e Eficiência",
-  "detalhe": "Rock Encantech · desde abr/2025"
- },
- {
-  "tipo": "programa",
-  "titulo": "Sebrae Supernova",
-  "detalhe": "Programa de empreendedorismo · Projeto Cuidadoula"
- },
- {
-  "tipo": "programa",
-  "titulo": "Instituto Bold",
-  "detalhe": "Embaixadora desde 2023"
- },
- {
-  "tipo": "programa",
-  "titulo": "Clube de pesquisa científica (GOMPU)",
-  "detalhe": "Em 2025, ajudei na criação e fundação; O impacto chamou a atenção da faculdade que criou o próprio programa de iniciação científica em 2026"
- },
- {
-  "tipo": "programa",
-  "titulo": "Pulse Mais",
-  "detalhe": "desde 2025 atua como tutora de Excel nos módulos de capacitação tecnológica"
- },
- {
-  "tipo": "ferramenta",
-  "titulo": "Google Sheets"
- },
- {
-  "tipo": "ferramenta",
-  "titulo": "Análise de dados"
- },
- {
-  "tipo": "ferramenta",
-  "titulo": "OKRs"
- },
- {
-  "tipo": "ferramenta",
-  "titulo": "Mapeamento de processos"
- },
- {
-  "tipo": "ferramenta",
-  "titulo": "Business Intelligence"
- },
- {
-  "tipo": "ferramenta",
-  "titulo": "Excel Intermediário"
- },
- {
-  "tipo": "ferramenta",
-  "titulo": "PowerBI Básico"
- },
- {
-  "tipo": "ferramenta",
-  "titulo": "Amazon Quick"
- },
- {
-  "tipo": "analise",
-  "titulo": "Avaliações da Pribox Esquadrias",
-  "descricao": "Proposta de melhoria para uma empresa de esquadrias de alumínio, baseada em avaliações públicas de clientes, com foco nas negativas.",
-  "tags": "Análise de avaliações; Proposta"
- },
- {
-  "tipo": "analise",
-  "titulo": "Trilha de análise de dados",
-  "descricao": "Roadmap de estudo estruturado para desenvolver as habilidades de análise de dados rumo a BI.",
-  "tags": "Estudo; BI"
- },
- {
-  "tipo": "projeto_curso",
-  "titulo": "Projeto Integrador: esquadrias",
-  "descricao": "Mapeamento dos processos de vendas e pós-venda de uma empresa de esquadrias, feito na UNIVESP.",
-  "tags": "Processos; UNIVESP"
- },
- {
-  "tipo": "projeto_curso",
-  "titulo": "Ferramenta Realizados",
-  "descricao": "Barra lateral em Google Apps Script para a planilha de registros do grupo do projeto integrador.",
-  "tags": "Apps Script; Sheets"
- },
- {
-  "tipo": "certificado",
-  "titulo": "EXEMPLO: Nome do certificado",
-  "detalhe": "Instituição · 2025 · 20h",
-  "tags": "Tema; Outro tema",
-  "arquivo": "exemplo.pdf",
-  "mostrar": "não"
- },
- {
-  "tipo": "em_andamento",
-  "titulo": "EXEMPLO: Nome do curso em andamento",
-  "detalhe": "Plataforma · previsão: mês/ano",
-  "tags": "Tema",
-  "mostrar": "não"
- },
- {
-  "tipo": "intro_sugestoes",
-  "descricao": "Cursos que eu recomendo para quem quer começar em dados, negócios e processos."
- },
- {
-  "tipo": "sugestao",
-  "titulo": "EXEMPLO: Nome do curso",
-  "detalhe": "Plataforma · Iniciante",
-  "descricao": "Por que eu recomendo este curso, em uma ou duas frases.",
-  "tags": "Tema",
-  "link": "https://exemplo.com",
-  "mostrar": "não"
- },
- {
-  "tipo": "contato",
-  "titulo": "GITHUB",
-  "link": "https://github.com/Eyshilla/"
- },
- {
-  "tipo": "contato",
-  "titulo": "LINKEDIN",
-  "link": "https://www.linkedin.com/in/eyshilla-lima"
- }
+  { tipo: "perfil", titulo: "EYSHILLA", detalhe: "Classe: estudante de Negócios e Produção", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "ficha", titulo: "MISSÃO ATUAL", detalhe: "Business Intelligence", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "ficha", titulo: "GUILDA", detalhe: "Rock Encantech (estágio em Planejamento e Eficiência)", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "ficha", titulo: "FASE", detalhe: "7º semestre · dez/2028", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "sobre", titulo: "", detalhe: "", descricao: "Oi! Eu sou a Eyshilla. Estudo Negócios e Produção na UNIVESP (7º semestre) e faço estágio em Planejamento e Eficiência na Rock Encantech. Quero trabalhar com Business Intelligence: transformar dados e processos em decisões melhores.", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "sobre", titulo: "", detalhe: "", descricao: "Em 2026 participei do Sebrae Supernova e em 2025 ajudei a fundar um clube de pesquisa científica na minha faculdade, que levou a instituição a lançar um programa de iniciação científica em 2026.", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "destaque", titulo: "SEMESTRE", detalhe: "7º na UNIVESP", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "destaque", titulo: "FORMATURA", detalhe: "dez/2028", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "destaque", titulo: "FOCO", detalhe: "Business Intelligence e Dados", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "formacao", titulo: "Engenharia de Produção", detalhe: "UNIVESP · 7º semestre · formatura prevista em dez/2028", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "formacao", titulo: "Tecnologia Mecânica na modalidade Processos de Produção", detalhe: "Formação tecnológica", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "experiencia", titulo: "Estágio em Planejamento e Eficiência", detalhe: "Rock Encantech · desde abr/2025", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "programa", titulo: "Sebrae Supernova", detalhe: "Programa de empreendedorismo · Projeto Cuidadoula", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "programa", titulo: "Instituto Bold", detalhe: "Embaixadora desde 2023", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "programa", titulo: "Clube de pesquisa científica (GOMPU)", detalhe: "Em 2025, ajudei na criação e fundação; O impacto chamou a atenção da faculdade que criou o próprio programa de iniciação científica em 2026", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "programa", titulo: "Pulse Mais", detalhe: "desde 2025 atua como tutora de Excel nos módulos de capacitação tecnológica", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "ferramenta", titulo: "Google Sheets", detalhe: "", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "ferramenta", titulo: "Análise de dados", detalhe: "", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "ferramenta", titulo: "OKRs", detalhe: "", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "ferramenta", titulo: "Mapeamento de processos", detalhe: "", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "ferramenta", titulo: "Business Intelligence", detalhe: "", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "ferramenta", titulo: "Excel Intermediário", detalhe: "", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "ferramenta", titulo: "PowerBI Básico", detalhe: "", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "ferramenta", titulo: "Amazon Quick", detalhe: "", descricao: "", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "analise", titulo: "Avaliações da Pribox Esquadrias", detalhe: "", descricao: "Proposta de melhoria para uma empresa de esquadrias de alumínio, baseada em avaliações públicas de clientes, com foco nas negativas.", tags: "Análise de avaliações; Proposta", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "analise", titulo: "Trilha de análise de dados", detalhe: "", descricao: "Roadmap de estudo estruturado para desenvolver as habilidades de análise de dados rumo a BI.", tags: "Estudo; BI", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "projeto_curso", titulo: "Projeto Integrador: esquadrias", detalhe: "", descricao: "Mapeamento dos processos de vendas e pós-venda de uma empresa de esquadrias, feito na UNIVESP.", tags: "Processos; UNIVESP", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "projeto_curso", titulo: "Ferramenta Realizados", detalhe: "", descricao: "Barra lateral em Google Apps Script para a planilha de registros do grupo do projeto integrador.", tags: "Apps Script; Sheets", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "certificado", titulo: "EXEMPLO: Nome do certificado", detalhe: "Instituição · 2025 · 20h", descricao: "", tags: "Tema; Outro tema", link: "", arquivo: "exemplo.pdf", miniatura: "", mostrar: "não" },
+  { tipo: "em_andamento", titulo: "EXEMPLO: Nome do curso em andamento", detalhe: "Plataforma · previsão: mês/ano", descricao: "", tags: "Tema", link: "", arquivo: "", miniatura: "", mostrar: "não" },
+  { tipo: "intro_sugestoes", titulo: "", detalhe: "", descricao: "Cursos que eu recomendo para quem quer começar em dados, negócios e processos.", tags: "", link: "", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "sugestao", titulo: "EXEMPLO: Nome do curso", detalhe: "Plataforma · Iniciante", descricao: "Por que eu recomendo este curso, em uma ou duas frases.", tags: "Tema", link: "https://exemplo.com", arquivo: "", miniatura: "", mostrar: "não" },
+  { tipo: "contato", titulo: "GITHUB", detalhe: "", descricao: "", tags: "", link: "https://github.com/Eyshilla/", arquivo: "", miniatura: "", mostrar: "" },
+  { tipo: "contato", titulo: "LINKEDIN", detalhe: "", descricao: "", tags: "", link: "https://www.linkedin.com/in/eyshilla-lima", arquivo: "", miniatura: "", mostrar: "" }
 ];
-
-/* ============ DAQUI PARA BAIXO NÃO PRECISA MEXER ============ */
-const VAZIO = { tipo: '', titulo: '', detalhe: '', descricao: '', tags: '', link: '', arquivo: '', miniatura: '', mostrar: '' };
-const norm = s => String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase();
-const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
-const safeUrl = u => { u = String(u || '').trim(); if (!u) return ''; if (/^(https?:|mailto:)/i.test(u)) return u; return /^[a-z][a-z0-9+.-]*:/i.test(u) ? '' : u; };
-const caminho = (v) => { v = String(v || '').trim(); if (!v) return ''; if (/^https?:/i.test(v)) return v; v = v.replace(/^\/+/, ''); return encodeURI(v.startsWith(PASTA) ? v : PASTA + v); };
-const ext = u => String(u || '').split(/[?#]/)[0].split('.').pop().toLowerCase();
-const isImg = u => ['png', 'jpg', 'jpeg', 'webp', 'gif', 'avif'].includes(ext(u));
-const rotuloDe = u => ext(u) === 'pdf' ? 'PDF' : (isImg(u) ? 'IMG' : 'LINK');
-const tags = a => a.map(t => `<span class="tag">${esc(t)}</span>`).join('');
-const slot = (url, label) => url ? `<a class="lnk" href="${esc(url)}" target="_blank" rel="noopener">${esc(label)} ▶</a>` : '';
-const lista = (list, card) => list.length ? list.map(card).join('') : '<div class="box"><p>Em breve.</p></div>';
-
-/* CSV */
-function parseCSV(t) {
-  const rows = []; let r = [], c = '', q = false;
-  for (let i = 0; i < t.length; i++) {
-    const ch = t[i];
-    if (q) { if (ch === '"') { if (t[i + 1] === '"') { c += '"'; i++; } else q = false; } else c += ch; }
-    else if (ch === '"') q = true;
-    else if (ch === ',') { r.push(c); c = ''; }
-    else if (ch === '\n' || ch === '\r') { if (ch === '\r' && t[i + 1] === '\n') i++; r.push(c); c = ''; rows.push(r); r = []; }
-    else c += ch;
-  }
-  if (c !== '' || r.length) { r.push(c); rows.push(r); }
-  return rows;
-}
-function lerLinhas(tabela) {
-  if (!tabela.length) return [];
-  const cab = tabela[0].map(norm), idx = {};
-  Object.keys(VAZIO).forEach(k => { idx[k] = cab.indexOf(k); });
-  if (idx.tipo < 0) throw new Error('coluna "tipo" não encontrada');
-  return tabela.slice(1).map(l => { const o = {}; Object.keys(VAZIO).forEach(k => { o[k] = idx[k] >= 0 ? (l[idx[k]] || '') : ''; }); return o; }).filter(o => norm(o.tipo));
-}
-
-/* modelo */
-let M = null;
-function montar(linhas) {
-  const m = { nome: '', classe: '', ficha: [], sobre: [], destaques: [], cv: { formacao: [], experiencia: [], programa: [], ferramenta: [] }, analises: [], projCursos: [], certs: [], emCurso: [], sugestoes: [], sugIntro: '', contatos: [] };
-  const lst = s => String(s).split(';').map(x => x.trim()).filter(Boolean);
-  linhas.map(r => Object.assign({}, VAZIO, r)).filter(r => !['nao', 'n', '0', 'false', 'no'].includes(norm(r.mostrar))).forEach(r => {
-    const tipo = norm(r.tipo);
-    const link = safeUrl(r.link) || caminho(r.arquivo);
-    switch (tipo) {
-      case 'perfil': m.nome = r.titulo; m.classe = r.detalhe; break;
-      case 'ficha': m.ficha.push([r.titulo, r.detalhe]); break;
-      case 'sobre': m.sobre.push(r.descricao); break;
-      case 'destaque': m.destaques.push([r.titulo, r.detalhe]); break;
-      case 'formacao': case 'experiencia': case 'programa': m.cv[tipo].push({ t: r.titulo, s: r.detalhe }); break;
-      case 'ferramenta': m.cv.ferramenta.push(r.titulo); break;
-      case 'analise': m.analises.push({ t: r.titulo, d: r.descricao, tags: lst(r.tags), link: safeUrl(r.link) }); break;
-      case 'projeto_curso': m.projCursos.push({ t: r.titulo, d: r.descricao, tags: lst(r.tags), link: safeUrl(r.link) }); break;
-      case 'certificado': m.certs.push({ t: r.titulo, d: r.detalhe, tags: lst(r.tags), link, img: caminho(r.miniatura) }); break;
-      case 'em_andamento': m.emCurso.push({ t: r.titulo, d: r.detalhe, tags: lst(r.tags) }); break;
-      case 'sugestao': m.sugestoes.push({ t: r.titulo, d: r.detalhe, por: r.descricao, tags: lst(r.tags), link: safeUrl(r.link) }); break;
-      case 'intro_sugestoes': m.sugIntro = r.descricao; break;
-      case 'contato': m.contatos.push({ label: r.titulo, url: safeUrl(r.link) }); break;
-    }
-  });
-  return m;
-}
-
-/* peças visuais */
-const fileIcon = rot => `<svg class="ficon" viewBox="0 0 48 60" role="img" aria-label="Arquivo ${esc(rot)}" shape-rendering="crispEdges"><path class="pg" d="M4 4H32V8H36V12H40V16H44V56H4Z"/><path class="dobra" d="M32 4V16H44"/><rect class="rot" x="8" y="30" width="32" height="16"/><text x="24" y="42" text-anchor="middle" font-size="${rot.length > 3 ? 7 : 9}">${esc(rot)}</text></svg>`;
-const thumb = c => {
-  const src = c.img || (isImg(c.link) ? c.link : '');
-  let inner = '';
-  if (src) inner = `<img src="${esc(src)}" alt="Certificado: ${esc(c.t)}" loading="lazy" data-rotulo="${rotuloDe(c.link || src)}">`;
-  else if (c.link) inner = fileIcon(rotuloDe(c.link));
-  else return '';
-  return c.link
-    ? `<a class="thumb" href="${esc(c.link)}" target="_blank" rel="noopener" aria-label="Abrir certificado: ${esc(c.t)}">${inner}</a>`
-    : `<div class="thumb">${inner}</div>`;
-};
-const certCard = c => `<div class="box quest">${thumb(c)}<small>CERTIFICADO</small><h3>${esc(c.t)}</h3><p class="meta">${esc(c.d)}</p><div>${tags(c.tags)}</div><div style="margin-top:6px">${slot(c.link, 'VER CERTIFICADO')}</div></div>`;
-const cursoCard = c => `<div class="box quest"><small>EM ANDAMENTO</small><h3>${esc(c.t)}</h3><p class="meta">${esc(c.d)}</p><div>${tags(c.tags)}</div></div>`;
-const sugCard = c => `<div class="box quest"><small>INDICAÇÃO</small><h3>${esc(c.t)}</h3><p class="meta">${esc(c.d)}</p><p>${esc(c.por)}</p><div style="margin-top:14px">${tags(c.tags)}</div><div style="margin-top:6px">${slot(c.link, 'VER CURSO')}</div></div>`;
-const projCard = label => p => `<div class="box quest"><small>${label}</small><h3>${esc(p.t)}</h3><p>${esc(p.d)}</p><div style="margin-top:14px">${tags(p.tags)}</div><div style="margin-top:6px">${slot(p.link, 'VER NO GITHUB')}</div></div>`;
-
-const VIEWS = {
-  sobre: () => `<div class="box"><span class="ti">Sobre mim</span>${M.sobre.length ? `<p class="lead">${esc(M.sobre[0])}</p>${M.sobre.slice(1).map(t => `<p>${esc(t)}</p>`).join('')}` : '<p>Em breve.</p>'}${M.destaques.length ? `<div class="stats">${M.destaques.map(s => `<div class="stat"><small>${esc(s[0])}</small>${esc(s[1])}</div>`).join('')}</div>` : ''}</div>`,
-  curriculo: () => {
-    const grupos = [['Formação', 'formacao'], ['Experiência', 'experiencia'], ['Programas e iniciativas', 'programa'], ['Ferramentas e temas', 'ferramenta']].filter(g => M.cv[g[1]].length);
-    const caixas = grupos.map(g => `<div class="box"><span class="ti">${g[0]}</span>${g[1] === 'ferramenta' ? `<div>${tags(M.cv.ferramenta)}</div>` : `<ul>${M.cv[g[1]].map(i => `<li><b>${esc(i.t)}</b><span>${esc(i.s)}</span></li>`).join('')}</ul>`}</div>`).join('');
-    return `<div><span class="sec">CURRÍCULO</span><div class="cols">${caixas || '<div class="box"><p>Em breve.</p></div>'}</div></div>`;
-  },
-  projetos: () => `<div><span class="sec">ANÁLISES</span><div class="cols">${lista(M.analises, projCard('MISSÃO DE ANÁLISE'))}</div></div><div><span class="sec">PROJETOS DE CURSOS</span><div class="cols">${lista(M.projCursos, projCard('MISSÃO DE CURSO'))}</div></div>`,
-  certificados: () => `<div><span class="sec">CERTIFICADOS</span><div class="cols">${lista(M.certs, certCard)}</div></div><div><span class="sec">EM ANDAMENTO</span><div class="cols">${lista(M.emCurso, cursoCard)}</div></div>`,
-  sugestoes: () => `<div><span class="sec">SUGESTÃO DE CURSOS</span>${M.sugIntro ? `<p class="intro">${esc(M.sugIntro)}</p>` : ''}<div class="cols">${lista(M.sugestoes, sugCard)}</div></div>`
-};
-
-/* sprite do sorvete */
-const SPR = ['.....LL.....','....LLLL....','....LLLL....','...PPPPPP...','..PHHPPPPP..','.PHHPPPPPPP.','.PHPPPPPPPP.','.PPPPPPPPPP.','PPPPPPPPPPPP','PP.PPPPP.PP.','.OOOOOOOOOO.','..ODODODOD..','..DODODODO..','...ODODOD...','....DODO....','.....OO.....'];
-const PAL = { P: '#ff9ecf', H: '#ffe3f1', L: '#c6f23c', O: '#a64fd0', D: '#5e2a8a' };
 (function () {
-  const c = document.getElementById('spr'), s = 8;
-  c.width = 12 * s; c.height = 16 * s;
-  const x = c.getContext('2d');
-  SPR.forEach((row, y) => [...row].forEach((ch, i) => { if (PAL[ch]) { x.fillStyle = PAL[ch]; x.fillRect(i * s, y * s, s, s); } }));
-  c.style.width = (12 * s) + 'px'; c.style.maxWidth = '100%'; c.style.height = 'auto';
-})();
+  const CHAVES = ['tipo', 'titulo', 'detalhe', 'descricao', 'tags', 'link', 'arquivo', 'miniatura', 'mostrar'];
+  const OCULTO = ['não', 'nao', 'n', '0', 'false'];
 
-/* tela */
-const main = document.getElementById('main');
-main.addEventListener('error', e => {
-  const el = e.target;
-  if (el.tagName === 'IMG' && el.dataset.rotulo) el.outerHTML = fileIcon(el.dataset.rotulo);
-}, true);
-function aplicar() {
-  document.getElementById('nome').textContent = M.nome;
-  document.getElementById('classe').textContent = M.classe;
-  document.getElementById('ficha').innerHTML = M.ficha.map(f => `<div><dt>${esc(f[0])}</dt><dd>${esc(f[1])}</dd></div>`).join('');
-  const html = M.contatos.map(c => slot(c.url, c.label)).join('');
-  const el = document.getElementById('contatos');
-  el.hidden = !html;
-  el.innerHTML = html ? `<span class="ti">Contatos</span><div class="contatos">${html}</div>` : '';
-}
-function show(tab) {
-  if (!VIEWS[tab]) tab = 'sobre';
-  main.innerHTML = VIEWS[tab]();
-  main.setAttribute('aria-labelledby', 't-' + tab);
-  document.querySelectorAll('.mi').forEach(b => {
-    const on = b.dataset.tab === tab;
-    b.setAttribute('aria-selected', String(on));
-    b.tabIndex = on ? 0 : -1;
-  });
-}
-const fromHash = () => location.hash.replace('#', '');
-document.querySelectorAll('.mi').forEach(b => {
-  b.addEventListener('click', () => { location.hash = b.dataset.tab; });
-  b.addEventListener('keydown', e => {
-    const tabs = [...document.querySelectorAll('.mi')], i = tabs.indexOf(b);
-    const k = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
-    if (!k) return;
-    e.preventDefault();
-    const n = tabs[(i + k + tabs.length) % tabs.length];
-    n.focus(); location.hash = n.dataset.tab;
-  });
-});
-window.addEventListener('hashchange', () => { if (M) show(fromHash()); });
+  const ABAS = [
+    { id: 'sobre', rotulo: 'SOBRE MIM' },
+    { id: 'curriculo', rotulo: 'CURRÍCULO' },
+    { id: 'projetos', rotulo: 'PROJETINHOS' },
+    { id: 'certificados', rotulo: 'CERTIFICADOS' },
+    { id: 'sugestoes', rotulo: 'SUGESTÃO DE CURSOS' }
+  ];
 
-/* carregamento: planilha primeiro, dados de reserva se falhar */
-function status(txt) {
-  if (!/[?&]status/.test(location.search)) return;
-  const p = document.getElementById('status');
-  p.textContent = 'Versão do site: ' + VERSAO + ' · Conteúdo: ' + txt;
-  p.hidden = false;
-}
-async function carregar() {
-  if (!PLANILHA_URL) { M = montar(PADRAO); status('dados do próprio arquivo (planilha ainda não configurada)'); return; }
-  main.innerHTML = '<p class="carregando">CARREGANDO...</p>';
-  try {
-    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 8000);
-    const resp = await fetch(PLANILHA_URL + (PLANILHA_URL.includes('?') ? '&' : '?') + 't=' + Date.now(), { signal: ctl.signal });
-    clearTimeout(to);
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const linhas = lerLinhas(parseCSV(await resp.text()));
-    if (!linhas.length) throw new Error('planilha vazia');
-    M = montar(linhas);
-    status('planilha carregada (' + linhas.length + ' linhas)');
-  } catch (e) {
-    M = montar(PADRAO);
-    status('planilha indisponível (' + e.message + '), usando dados de reserva');
+  const MASCOTE = [
+    '.....LL.....',
+    '....LLLL....',
+    '....LLLL....',
+    '...PPPPPP...',
+    '..PHHPPPPP..',
+    '.PHHPPPPPPP.',
+    '.PHPPPPPPPP.',
+    '.PPPPPPPPPP.',
+    'PPPPPPPPPPPP',
+    'PP.PPPPP.PP.',
+    '.OOOOOOOOOO.',
+    '..ODODODOD..',
+    '..DODODODO..',
+    '...ODODOD...',
+    '....DODO....',
+    '.....OO.....'
+  ];
+  const CORES = { P: '#ff9ecf', H: '#ffe3f1', L: '#c6f23c', O: '#a64fd0', D: '#5e2a8a' };
+
+  const $ = (id) => document.getElementById(id);
+
+  function texto(v) {
+    return v === undefined || v === null ? '' : String(v);
   }
-}
-carregar().then(() => { aplicar(); show(fromHash()); });
-</script>
 
+  function esc(v) {
+    return texto(v).replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
+
+  function visivel(linha) {
+    return !OCULTO.includes(texto(linha.mostrar).trim().toLowerCase());
+  }
+
+  const dados = (Array.isArray(PADRAO) ? PADRAO : [])
+    .filter((linha) => linha && typeof linha === 'object' && visivel(linha))
+    .map((linha) => {
+      const limpa = {};
+      CHAVES.forEach((k) => { limpa[k] = texto(linha[k]).trim(); });
+      limpa.tipo = limpa.tipo.toLowerCase();
+      return limpa;
+    });
+
+  const doTipo = (tipo) => dados.filter((l) => l.tipo === tipo);
+
+  /* Aceita apenas http:, https:, mailto: ou caminhos relativos. */
+  function urlSegura(valor) {
+    const url = texto(valor).trim();
+    if (!url) return '';
+    const semControle = url.replace(/[\u0000-\u0020\u007f-\u009f]/g, '');
+    if (/^[a-z][a-z0-9+.\-]*:/i.test(semControle)) {
+      return /^(https?|mailto):/i.test(semControle) ? url : '';
+    }
+    if (/^[\\/]{2}/.test(semControle)) return '';
+    return url;
+  }
+
+  function caminhoCertificado(valor) {
+    const nome = texto(valor).trim();
+    if (!nome) return '';
+    if (/^https?:/i.test(nome) || /[\/\\]/.test(nome)) return urlSegura(nome);
+    return 'certificados/' + encodeURIComponent(nome);
+  }
+
+  function botao(url, rotulo) {
+    const href = urlSegura(url);
+    if (!href) return '';
+    const alvo = /^mailto:/i.test(href.replace(/[\u0000-\u0020]/g, '')) ? '' : ' target="_blank" rel="noopener"';
+    return '<a class="btn" href="' + esc(href) + '"' + alvo + '>' + esc(rotulo) + '</a>';
+  }
+
+  function tags(valor) {
+    const lista = texto(valor).split(';').map((t) => t.trim()).filter(Boolean);
+    if (!lista.length) return '';
+    return '<ul class="tags">' + lista.map((t) => '<li class="tag">' + esc(t) + '</li>').join('') + '</ul>';
+  }
+
+  function caixa(titulo, corpo, extraClasse) {
+    return '<section class="box' + (extraClasse ? ' ' + extraClasse : '') + '">' +
+      (titulo ? '<h2 class="box-titulo">' + esc(titulo) + '</h2>' : '') + corpo + '</section>';
+  }
+
+  function emBreve() {
+    return caixa('', '<p>Em breve.</p>');
+  }
+
+  function bloco(selo, corpo) {
+    return '<section class="bloco"><h2 class="selo">' + esc(selo) + '</h2>' + corpo + '</section>';
+  }
+
+  /* Mascote */
+  function desenharMascote() {
+    const canvas = $('mascote');
+    const ctx = canvas.getContext && canvas.getContext('2d');
+    if (!ctx) return;
+    const px = 8;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    MASCOTE.forEach((linha, y) => {
+      for (let x = 0; x < linha.length; x++) {
+        const cor = CORES[linha[x]];
+        if (!cor) continue;
+        ctx.fillStyle = cor;
+        ctx.fillRect(x * px, y * px, px, px);
+      }
+    });
+  }
+
+  /* Coluna esquerda */
+  function montarLateral() {
+    const perfil = doTipo('perfil')[0];
+    if (perfil) {
+      $('nome').textContent = perfil.titulo;
+      $('classe').textContent = perfil.detalhe;
+      if (perfil.titulo) document.title = perfil.titulo + ' · Portfólio';
+    }
+    $('ficha').innerHTML = doTipo('ficha').slice(0, 3).map((l) =>
+      '<div class="ficha-item"><dt>' + esc(l.titulo) + '</dt><dd>' + esc(l.detalhe) + '</dd></div>'
+    ).join('');
+
+    const contatos = doTipo('contato').map((l) => botao(l.link, l.titulo)).filter(Boolean);
+    if (contatos.length) {
+      $('contatos').innerHTML = contatos.join('');
+      $('caixa-contatos').hidden = false;
+    }
+  }
+
+  /* Abas */
+  function painelSobre() {
+    const paragrafos = doTipo('sobre').filter((l) => l.descricao);
+    let html = '';
+    if (paragrafos.length) {
+      html += caixa('Sobre mim', '<div class="texto-sobre">' + paragrafos.map((l, i) =>
+        '<p' + (i === 0 ? ' class="abertura"' : '') + '>' + esc(l.descricao) + '</p>'
+      ).join('') + '</div>');
+    }
+    const destaques = doTipo('destaque');
+    if (destaques.length) {
+      html += '<ul class="destaques" aria-label="Destaques">' + destaques.map((l) =>
+        '<li class="destaque"><span class="destaque-rotulo">' + esc(l.titulo) +
+        '</span><span class="destaque-valor">' + esc(l.detalhe) + '</span></li>'
+      ).join('') + '</ul>';
+    }
+    return html || emBreve();
+  }
+
+  function painelCurriculo() {
+    const grupos = [
+      { tipo: 'formacao', titulo: 'Formação' },
+      { tipo: 'experiencia', titulo: 'Experiência' },
+      { tipo: 'programa', titulo: 'Programas e iniciativas' }
+    ];
+    const caixas = grupos.map((g) => {
+      const itens = doTipo(g.tipo).filter((l) => l.titulo || l.detalhe);
+      if (!itens.length) return '';
+      return caixa(g.titulo, '<ul class="lista-quadrada">' + itens.map((l) =>
+        '<li><span class="item-titulo">' + esc(l.titulo) + '</span>' +
+        (l.detalhe ? '<span class="item-detalhe">' + esc(l.detalhe) + '</span>' : '') + '</li>'
+      ).join('') + '</ul>');
+    }).filter(Boolean);
+
+    const ferramentas = doTipo('ferramenta').map((l) => l.titulo).filter(Boolean);
+    if (ferramentas.length) {
+      caixas.push(caixa('Ferramentas e temas', tags(ferramentas.join(';'))));
+    }
+    return caixas.length ? '<div class="grade grade-curriculo">' + caixas.join('') + '</div>' : emBreve();
+  }
+
+  function cardProjeto(l, legenda) {
+    return '<article class="box card">' +
+      '<p class="legenda">' + esc(legenda) + '</p>' +
+      '<h3 class="card-titulo">' + esc(l.titulo) + '</h3>' +
+      (l.descricao ? '<p class="card-texto">' + esc(l.descricao) + '</p>' : '') +
+      tags(l.tags) +
+      (urlSegura(l.link) ? '<div class="card-acoes">' + botao(l.link, 'VER NO GITHUB ▶') + '</div>' : '') +
+      '</article>';
+  }
+
+  function grade(itens, fn) {
+    return itens.length ? '<div class="grade">' + itens.map(fn).join('') + '</div>' : emBreve();
+  }
+
+  function painelProjetos() {
+    return bloco('ANÁLISES', grade(doTipo('analise'), (l) => cardProjeto(l, 'MISSÃO DE ANÁLISE'))) +
+      bloco('PROJETOS DE CURSOS', grade(doTipo('projeto_curso'), (l) => cardProjeto(l, 'MISSÃO DE CURSO')));
+  }
+
+  function cardCertificado(l) {
+    const destino = urlSegura(l.link) || caminhoCertificado(l.arquivo);
+    const mini = caminhoCertificado(l.miniatura);
+    const miniOk = mini && !/^mailto:/i.test(mini);
+    return '<article class="box card">' +
+      (miniOk ? '<img class="miniatura" src="' + esc(mini) + '" alt="Miniatura: ' + esc(l.titulo) + '" loading="lazy">' : '') +
+      '<p class="legenda">CONQUISTA</p>' +
+      '<h3 class="card-titulo">' + esc(l.titulo) + '</h3>' +
+      (l.detalhe ? '<p class="card-detalhe">' + esc(l.detalhe) + '</p>' : '') +
+      tags(l.tags) +
+      (destino ? '<div class="card-acoes">' + botao(destino, 'VER CERTIFICADO ▶') + '</div>' : '') +
+      '</article>';
+  }
+
+  function cardAndamento(l) {
+    return '<article class="box card">' +
+      '<p class="legenda">EM PROGRESSO</p>' +
+      '<h3 class="card-titulo">' + esc(l.titulo) + '</h3>' +
+      (l.detalhe ? '<p class="card-detalhe">' + esc(l.detalhe) + '</p>' : '') +
+      tags(l.tags) +
+      '</article>';
+  }
+
+  function painelCertificados() {
+    return bloco('CERTIFICADOS', grade(doTipo('certificado'), cardCertificado)) +
+      bloco('EM ANDAMENTO', grade(doTipo('em_andamento'), cardAndamento));
+  }
+
+  function cardSugestao(l) {
+    return '<article class="box card">' +
+      '<p class="legenda">INDICAÇÃO</p>' +
+      '<h3 class="card-titulo">' + esc(l.titulo) + '</h3>' +
+      (l.detalhe ? '<p class="card-detalhe">' + esc(l.detalhe) + '</p>' : '') +
+      (l.descricao ? '<p class="card-texto">' + esc(l.descricao) + '</p>' : '') +
+      tags(l.tags) +
+      (urlSegura(l.link) ? '<div class="card-acoes">' + botao(l.link, 'VER CURSO ▶') + '</div>' : '') +
+      '</article>';
+  }
+
+  function painelSugestoes() {
+    const intro = doTipo('intro_sugestoes').filter((l) => l.descricao);
+    return (intro.length ? caixa('Sugestão de cursos', '<div class="texto-sobre">' +
+      intro.map((l) => '<p>' + esc(l.descricao) + '</p>').join('') + '</div>') : '') +
+      grade(doTipo('sugestao'), cardSugestao);
+  }
+
+  const MONTADORES = {
+    sobre: painelSobre,
+    curriculo: painelCurriculo,
+    projetos: painelProjetos,
+    certificados: painelCertificados,
+    sugestoes: painelSugestoes
+  };
+
+  function montarAbas() {
+    $('menu').innerHTML = ABAS.map((a) =>
+      '<button type="button" class="btn menu-item" role="tab" id="aba-' + a.id + '" ' +
+      'aria-controls="painel-' + a.id + '" aria-selected="false" tabindex="-1" data-aba="' + a.id + '">' +
+      esc(a.rotulo) + '</button>'
+    ).join('');
+    $('conteudo').innerHTML = ABAS.map((a) =>
+      '<section class="painel" role="tabpanel" id="painel-' + a.id + '" aria-labelledby="aba-' + a.id + '" tabindex="0" hidden>' +
+      MONTADORES[a.id]() + '</section>'
+    ).join('');
+  }
+
+  function abaDoHash() {
+    let id = location.hash.replace(/^#/, '');
+    try { id = decodeURIComponent(id); } catch (e) { /* fragmento malformado: usa o padrão */ }
+    return ABAS.some((a) => a.id === id) ? id : 'sobre';
+  }
+
+  function mostrarAba(id) {
+    ABAS.forEach((a) => {
+      const ativa = a.id === id;
+      const aba = $('aba-' + a.id);
+      aba.setAttribute('aria-selected', ativa ? 'true' : 'false');
+      aba.tabIndex = ativa ? 0 : -1;
+      $('painel-' + a.id).hidden = !ativa;
+    });
+  }
+
+  function irPara(id, focar) {
+    if (location.hash !== '#' + id) location.hash = id;
+    mostrarAba(id);
+    if (focar) $('aba-' + id).focus();
+  }
+
+  function ligarEventos() {
+    const menu = $('menu');
+    menu.addEventListener('click', (ev) => {
+      const alvo = ev.target.closest('[role="tab"]');
+      if (alvo) irPara(alvo.dataset.aba, false);
+    });
+    menu.addEventListener('keydown', (ev) => {
+      const alvo = ev.target.closest('[role="tab"]');
+      if (!alvo) return;
+      const atual = ABAS.findIndex((a) => a.id === alvo.dataset.aba);
+      let prox = -1;
+      switch (ev.key) {
+        case 'ArrowDown':
+        case 'ArrowRight': prox = (atual + 1) % ABAS.length; break;
+        case 'ArrowUp':
+        case 'ArrowLeft': prox = (atual - 1 + ABAS.length) % ABAS.length; break;
+        case 'Home': prox = 0; break;
+        case 'End': prox = ABAS.length - 1; break;
+        default: return;
+      }
+      ev.preventDefault();
+      irPara(ABAS[prox].id, true);
+    });
+    window.addEventListener('hashchange', () => mostrarAba(abaDoHash()));
+  }
+
+  desenharMascote();
+  montarLateral();
+  montarAbas();
+  ligarEventos();
+  mostrarAba(abaDoHash());
+})();
+</script>
+</body>
 </html>
